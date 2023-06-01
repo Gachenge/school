@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="../static/styles/forms.css">
+<script src="../static/script/redirect.js"></script>
+<h2>Students</h2>
+<div class="table-wrapper">
+    <table class="table table-striped table-dark">
+        <thead>
+        <tr>
+            <th>Student Id</th>
+            <th>Name</th>
+            <th>Average Grade</th>
+            <th>Subjects</th>
+            <th>Grades</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.student_id }}</td>
+            <td>{{ student.name }}</td>
+            <td>{{ student.average_grade }}</td>
+            <td>
+                {% for subject in student.subjects %}
+                    {{ subject.name }}{% if not loop.last %}<br>{% endif %}
+                {% endfor %}
+            </td>
+            <td>
+                {% for subject in student.subjects %}
+                    {% for grade in subject.grades %}
+                        {{ grade.grade }}{% if not loop.last %}<br>{% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<button type="button" class="btn btn-primary" onclick="adstudent()">Add Student</button>
+<button type="button" class="btn btn-primary" onclick="delstudent()">Delete Student</button>
+<button type="button" class="btn btn-primary" onclick="upstudent()">Update Student</button>
+
+{% endblock %}

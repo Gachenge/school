@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="../static/styles/forms.css">
+<script src="../static/script/redirect.js"></script>
+<h2>Students</h2>
+<div class="table-wrapper">
+    <table class="table table-striped table-dark">
+        <thead>
+        <tr>
+            <th>User Id</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>E-Mail</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.email }}</td>
+            {% endfor %}
+        </tr>
+        <tbody>
+    </table>
+</div>
+<button type="button" class="btn btn-primary" onclick="aduser()">Add User</button>
+<button type="button" class="btn btn-primary" onclick="deluser()">Delete User</button>
+{% endblock %}

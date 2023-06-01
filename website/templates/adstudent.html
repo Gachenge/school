@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Add a student{% endblock %}
+
+{% block content %}
+<form method="POST">
+    <h3 align="center">Add new student</h3>
+    <div class="form-group">
+        <label for="fname">First Name</label>
+        <input required type="text" class="form-control" id="fname" name="fname" placeholder="Enter first name">
+    </div>
+    <div class="form-group">
+        <label for="lname">Last Name</label>
+        <input required type="text" class="form-control" id="lname" name="lname" placeholder="Enter last name">
+    </div>
+    <div class="form-group">
+        <label for="subject_name">Subject name</label>
+        <input required type="text" class="form-control" id="subject_name" name="subject_name" placeholder="Enter subject">
+    </div>
+    <div class="form-group">
+        <label for="teacher_fname">Teacher first name</label>
+        <input required type="text" class="form-control" id="teacher_fname" name="teacher_fname" placeholder="Enter teacher first name">
+    </div>
+    <div class="form-group">
+        <label for="teacher_lname">Teacher last name</label>
+        <input required type="text" class="form-control" id="teacher_lname" name="teacher_lname" placeholder="Enter teacher last name">
+    </div>
+    <div class="form-group">
+        <label for="grade">Grade</label>
+        <input required type="text" class="form-control" id="grade" name="grade" placeholder="Enter subject grade">
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary">Add</button>
+</form>
+{% endblock %}

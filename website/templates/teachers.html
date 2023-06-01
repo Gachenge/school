@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Teachers{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="../static/styles/forms.css">
+<script src="../static/script/redirect.js"></script>
+<h2>Teachers</h2>
+<div class="table-wrapper">
+    <table class="table table-striped table-dark">
+        <thead>
+        <tr>
+            <th>Teacher Id</th>
+            <th>Name</th>
+            <th>E-Mail</th>
+            <th>Phone</th>
+            <th>Subjects</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for teacher in teachers %}
+        <tr>
+            <td>{{ teacher.teacher_id }}</td>
+            <td>{{ teacher.name }}</td>
+            <td>{{ teacher.email }}</td>
+            <td>{{ teacher.phone }}</td>
+            <td>
+                {% for subject in teacher.subjects %}
+                    {{ subject.name }}{% if not loop.last %}<br> {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+        <tbody>
+    </table>
+</div>
+<button type="button" class="btn btn-primary" onclick="adteacher()">Add Teacher</button>
+<button type="button" class="btn btn-primary" onclick="delteacher()">Delete Teacher</button>
+<button type="button" class="btn btn-primary" onclick="upteacher()">Update Teacher</button>
+
+{% endblock %}
