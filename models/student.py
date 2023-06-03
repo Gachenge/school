@@ -18,7 +18,6 @@ class Student(Main, Base):
         __tablename__ = 'students'
         name = Column(String(128), nullable=False)
         student_id = Column(Integer, autoincrement=True, primary_key=True)
-        average_grade = Column(String(5))
         subjects = relationship("Subject", secondary='subject_student_association', back_populates="student")
         grades = relationship("SubjectGrade", back_populates="student")
     else:
@@ -27,13 +26,13 @@ class Student(Main, Base):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-@property
-def average_grade(self):
-    total_grade = sum(int(grade.grade.rstrip('%')) for grade in self.grades)
-    grade_count = len(self.grades)
-    if grade_count > 0:
-        average = total_grade / grade_count
-        return "{:.2f}".format(average)
-    else:
-        return "N/A"
+    @property
+    def average_grade(self):
+        total_grade = sum(int(grade.grade.rstrip('%')) for grade in self.grades)
+        grade_count = len(self.grades)
+        if grade_count > 0:
+            average = total_grade / grade_count
+            return "{:.2f}".format(average)
+        else:
+            return "N/A"
 
