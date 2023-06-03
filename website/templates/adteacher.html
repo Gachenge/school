@@ -1,9 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Add a student{% endblock %}
+{% block title %}Add Teacher{% endblock %}
 
 {% block content %}
 <form method="POST">
-    <h3 align="center">Add new teacher</h3>
+    <h3 align="center">Add teacher</h3>
+    <div class="form-group">
+        <label for="email">Email Address</label>
+        <input required type="email" class="form-control" id="email" name="email" placeholder="Enter Email">
+    </div>
     <div class="form-group">
         <label for="fname">First Name</label>
         <input required type="text" class="form-control" id="fname" name="fname" placeholder="Enter first name">
@@ -13,14 +17,14 @@
         <input required type="text" class="form-control" id="lname" name="lname" placeholder="Enter last name">
     </div>
     <div class="form-group">
-        <label for="email">E-Mail address</label>
-        <input required type="text" class="form-control" id="email" name="email" placeholder="Enter email address">
-    </div>
-    <div class="form-group">
-        <label for="phone">Phone number</label>
+        <label for="phone">Phone Number</label>
         <input required type="tel" class="form-control" id="phone" name="phone" placeholder="Enter phone number">
+    </div><div class="form-group">
+        <label for="subject">Enter the subject</label>
+        <input required type="subject" class="form-control" id="subject" name="subject" placeholder="Enter subject">
     </div>
     <br>
-    <button type="submit" class="btn btn-primary">Add</button>
+    <button type="submit" class="btn btn-primary">Add Teacher</button>
 </form>
+
 {% endblock %}

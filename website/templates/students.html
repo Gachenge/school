@@ -11,9 +11,9 @@
         <tr>
             <th>Student Id</th>
             <th>Name</th>
-            <th>Average Grade</th>
             <th>Subjects</th>
             <th>Grades</th>
+            <th>Average Grade</th>
         </tr>
         </thead>
         <tbody>
@@ -21,19 +21,21 @@
         <tr>
             <td>{{ student.student_id }}</td>
             <td>{{ student.name }}</td>
+            <td>
+                {% for subject in student.subjects %}
+                {{ subject.name }}{% if not loop.last %}<br>{% endif %}
+                {% endfor %}
+            </td>
+            <td>
+                {% set student_grades = [] %}
+                {% for grade in grades %}
+                {% if grade.student_id == student.student_id %}
+                {% set _ = student_grades.append(grade.grade|float) %}
+                {{ grade.grade }}{% if not loop.last %}<br>{% endif %}
+                {% endif %}
+                {% endfor %}
+            </td>
             <td>{{ student.average_grade }}</td>
-            <td>
-                {% for subject in student.subjects %}
-                    {{ subject.name }}{% if not loop.last %}<br>{% endif %}
-                {% endfor %}
-            </td>
-            <td>
-                {% for subject in student.subjects %}
-                    {% for grade in subject.grades %}
-                        {{ grade.grade }}{% if not loop.last %}<br>{% endif %}
-                    {% endfor %}
-                {% endfor %}
-            </td>
         </tr>
         {% endfor %}
         </tbody>

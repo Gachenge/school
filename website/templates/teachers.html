@@ -25,16 +25,15 @@
             <td>{{ teacher.phone }}</td>
             <td>
                 {% for subject in teacher.subjects %}
-                    {{ subject.name }}{% if not loop.last %}<br> {% endif %}
+                {{ subject.name }}{% if not loop.last %}<br>{% endif %}
                 {% endfor %}
             </td>
+            {% endfor %}
         </tr>
-        {% endfor %}
         <tbody>
     </table>
 </div>
 <button type="button" class="btn btn-primary" onclick="adteacher()">Add Teacher</button>
 <button type="button" class="btn btn-primary" onclick="delteacher()">Delete Teacher</button>
 <button type="button" class="btn btn-primary" onclick="upteacher()">Update Teacher</button>
-
 {% endblock %}

@@ -1,13 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Update Teacher{% endblock %}
+{% block title %}Update Student{% endblock %}
 
 {% block content %}
 <form method="POST">
-    <h3 align="center">Update teacher</h3>
-    <div class="form-group">
-        <label for="email">Email Address</label>
-        <input required type="email" class="form-control" id="email" name="email" placeholder="Enter Email">
-    </div>
+    <h3 align="center">Update student</h3>
     <div class="form-group">
         <label for="fname">First Name</label>
         <input required type="text" class="form-control" id="fname" name="fname" placeholder="Enter first name">
@@ -17,18 +13,18 @@
         <input required type="text" class="form-control" id="lname" name="lname" placeholder="Enter last name">
     </div>
     <div class="form-group">
-        <label for="teacher_id">Teacher ID</label>
-        <input required type="text" class="form-control" id="teacher_id" name="teacher_id" placeholder="Enter teacher ID">
+        <label for="student_id">Student ID</label>
+        <input required type="text" class="form-control" id="student_id" name="student_id" placeholder="Enter student ID">
     </div>
     <div class="form-group">
-        <label for="phone">Phone Number</label>
-        <input required type="tel" class="form-control" id="phone" name="phone" placeholder="Enter phone number">
+        <label for="grade">Subject grade</label>
+        <input required type="text" class="form-control" id="grade" name="grade" placeholder="Enter subject grade">
     </div><div class="form-group">
         <label for="subject">Enter the subject</label>
         <input required type="subject" class="form-control" id="subject" name="subject" placeholder="Enter subject">
     </div>
     <br>
-    <button type="submit" class="btn btn-primary">Update Teacher</button>
+    <button type="submit" class="btn btn-primary">Update Student</button>
 </form>
 
 {% endblock %}

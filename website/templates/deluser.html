@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Delete user{% endblock %}
+
+{% block content %}
+<form method="POST">
+    <h3 align="center">Delete user</h3>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address">
+    <br>
+    <button type="submit" class="btn btn-primary">Delete</button>
+</form>
+
+
+{% endblock %}

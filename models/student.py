@@ -5,6 +5,7 @@ import models
 from models.main import Main
 from models.main import Base
 from models.subjects import Subject
+from models.subject_grades import SubjectGrade
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import ForeignKey
@@ -25,4 +26,14 @@ class Student(Main, Base):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.average_grade = models.storage.get_average(self)
+
+@property
+def average_grade(self):
+    total_grade = sum(int(grade.grade.rstrip('%')) for grade in self.grades)
+    grade_count = len(self.grades)
+    if grade_count > 0:
+        average = total_grade / grade_count
+        return "{:.2f}".format(average)
+    else:
+        return "N/A"
+
