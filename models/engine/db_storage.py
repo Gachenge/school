@@ -9,6 +9,7 @@ from models.teacher import Teacher
 from models.subjects import Subject
 from models.user import User
 from models.subject_grades import SubjectGrade
+from models.blog import Blog
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 from hashlib import md5
@@ -16,7 +17,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 from models.relationship_tables import subject_student_association
 
-classes = {"User": User, "Student": Student, "Main": Main,
+classes = {"User": User, "Student": Student, "Main": Main, "Blog": Blog,
            "Teacher": Teacher, "Subject": Subject, "SubjectGrade": SubjectGrade}
 
 
@@ -87,6 +88,7 @@ class DBStorage:
     
     def authenticate_user(self, email, password):
         try:
+            admins = []
             user = self.__session.query(User).filter_by(email=email).first()
             hashed = md5(password.encode()).hexdigest()
             if user and hashed == user.password:

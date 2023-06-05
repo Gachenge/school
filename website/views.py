@@ -12,7 +12,9 @@ from models.student import Student
 from models.teacher import Teacher
 from models.subjects import Subject
 from models.subject_grades import SubjectGrade
-from flask import jsonify
+from models.blog import Blog
+from website.forms import PostForm
+from flask import abort
 
 views = Blueprint('views', __name__)
 
@@ -20,7 +22,8 @@ views = Blueprint('views', __name__)
 @views.route('/home')
 @login_required
 def home():
-    return render_template("home.html", user=current_user)
+    posts = storage.all(Blog).values()
+    return render_template("home.html", user=current_user, posts=posts)
 
 @views.route("/teachers")
 def teachers():
@@ -157,7 +160,7 @@ def adsubject():
             grade = SubjectGrade(grade=grades, student_id=stude.student_id, subject_id=subject.subject_id)
             storage.new(grade)
             storage.save()
-            flash("New subject added")
+            flash("New subject added", 'success')
         return redirect(url_for('views.subjects'))
     return render_template("adsubject.html", user=current_user)
 
@@ -357,7 +360,7 @@ def aduser():
             'password1': request.form.get('password1')
         }
         if details['email'] in [user.email for user in storage.all(User).values()]:
-            flash("User already registered")
+            flash("User already registered", 'error')
         elif len(details['email']) < 5:
             flash("Enter the valid email address", category='error')
         elif len(details['first_name']) < 3 or len(details['last_name']) < 3:
@@ -384,3 +387,86 @@ def deluser():
         storage.save()
         return redirect(url_for('views.users'))
     return render_template("deluser.html", user=current_user)
+
+                        
+@views.route('admnuser', methods=['GET', 'POST'])
+def adnuser():
+    if request.method == 'POST':
+        users = storage.all(User).values()
+        for user in users:
+            if user.id == request.form.get('user_id'):
+                user.role = 'admin'
+            else:
+                flash("Enter a valid user id", category='error')
+        return redirect(url_for('auth.admin'))
+    return render_template("admnuser.html", user=current_user)
+
+@views.route('/about')
+def about():
+    return render_template('about.html', user=current_user)
+
+@views.route("/post/new", methods=['GET', 'POST'])
+@login_required
+def adblog():
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Blog(title=form.title.data, content=form.content.data, author=current_user)
+        storage.new(post)
+        storage.save()
+        flash("Your post has been created", 'success')
+        return redirect(url_for('views.home'))
+    return render_template('create_post.html', user=current_user, form=form, legend='New post')
+
+@views.route("/post/<int:post_id>")
+def post(post_id):
+    posts = storage.all(Blog).values()
+    new = None
+    for post in posts:
+        if post_id == post.blog_id:
+            new = post
+    if new == None:
+        abort(404)
+    return render_template('post.html', post=new, user=current_user)
+
+@views.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
+@login_required
+def updatepost(post_id):
+    posts = storage.all(Blog).values()
+    new = None
+    for post in posts:
+        if post_id == post.blog_id:
+            new = post
+    if new == None:
+        abort(404)
+    elif new.author != current_user:
+        abort(403)
+    form = PostForm()
+    if form.validate_on_submit():
+        new.data = form.title.data
+        new.content = form.content.data
+        storage.save()
+        flash("Your post has been updated", 'success')
+        return redirect(url_for('views.post', post_id=new.blog_id))
+    elif request.method == 'GET':
+        form.title.data = new.title
+        form.content.data = post.content
+    return render_template('create_post.html', user=current_user, form=form, legend='Update post')
+
+@views.route("/post/<int:post_id>/delete", methods=['POST'])
+@login_required
+def delete_post(post_id):
+    posts = storage.all(Blog).values()
+    new = None
+    for post in posts:
+        if post_id == post.blog_id:
+            new = post
+    if new == None:
+        abort(404)
+    elif new.author != current_user:
+        abort(403)
+    else:
+        storage.delete(new)
+        storage.save()
+        flash("Your post has been deleted", 'success')
+        return redirect(url_for('views.home'))
+    

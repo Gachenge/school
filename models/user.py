@@ -4,6 +4,7 @@
 import models
 from models.main import Main
 from models.main import Base
+from models.blog import Blog
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import Integer
@@ -20,6 +21,9 @@ class User(Main, UserMixin, Base):
         password = Column(String(128), nullable=False)
         first_name = Column(String(128), nullable=False)
         last_name = Column(String(128), nullable=False)
+        image_file = Column(String(20), nullable=False, default='default.png')
+        role = Column(String(20), nullable=False, default='user')
+        posts = relationship('Blog', backref='author', lazy=True)
     else:
         email = ""
         password = ""

@@ -62,7 +62,23 @@ function deluser() {
     window.location.href = '/deluser';
 }
 
-$(document).ready(function () {
-    $('#dtBasicExample').DataTable();
-    $('.dataTables_length').addClass('bs-select');
-  });
+function admnuser() {
+    window.location.href = "/admnuser"
+}
+
+function search() {
+    var query = document.getElementById("searchQuery").value.trim();
+    if (query === "") {
+        return;
+    }
+    var content = document.getElementById("main-content");
+    var words = content.innerHTML.split(" ");
+    var highlightedContent = words.map(function(word) {
+        if (word.toLowerCase().includes(query.toLowerCase())) {
+            return "<span class='highlight'>" + word + "</span>";
+        } else {
+            return word;
+        }
+    });
+    content.innerHTML = highlightedContent.join(" ");
+}

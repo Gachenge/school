@@ -9,12 +9,13 @@ from models.subjects import Subject
 from models.main import Base
 from models.user import User
 from models.subject_grades import SubjectGrade
+from models.blog import Blog
 from hashlib import md5
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 from models.relationship_tables import subject_student_association
 
-classes = {"User": User, "Student": Student, "Main": Main,
+classes = {"User": User, "Student": Student, "Main": Main, "Blog": Blog,
            "Teacher": Teacher, "Subject": Subject, "SubjectGrade": SubjectGrade}
 
 

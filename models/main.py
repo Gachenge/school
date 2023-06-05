@@ -7,7 +7,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import DateTime
+import pytz
 from os import getenv
+
+eat_time = pytz.timezone("Africa/Nairobi")
 
 time = "%Y-%m-%dT%H:%M:%S.%f"
 
@@ -21,8 +24,8 @@ class Main:
     """define all other users"""
 
     id = Column(String(60), nullable=False, primary_key=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_at = Column(DateTime, nullable=False, default=datetime.now(eat_time))
+    updated_at = Column(DateTime, nullable=False, default=datetime.now(eat_time))
 
     def __init__(self, *args, **kwargs):
         """initialise all attributes"""

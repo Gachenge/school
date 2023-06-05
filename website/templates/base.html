@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link
+    <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
       integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
@@ -14,6 +14,10 @@
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       crossorigin="anonymous"
     />
+    <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='styles/body.css') }}">
+
     <title>{% block title %}Home{% endblock %}</title>
     </head>
     <body>
@@ -21,14 +25,22 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbar">
-                <div class="navbar-nav">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ml-auto">
                     {% if user.is_authenticated %}
-                    <a class="nav-item nav-link" id="home" href="/home">Home</a>
-                    <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+                      {% if current_user.role == 'admin' %}
+                        <a class="nav-item nav-link" id="admin" href="{{ url_for('auth.admin') }}">Admin</a>
+                        <a class="nav-item nav-link" id="home" href="{{ url_for('views.home') }}">Home</a>
+                        <a class="nav-item nav-link" id="logout" href="{{ url_for('auth.logout') }}">Logout</a>
+                      {% else %}
+                        <a class="nav-item nav-link" id="account" href="{{ url_for('views.adblog') }}">New Post</a>
+                        <a class="nav-item nav-link" id="account" href="{{ url_for('auth.account') }}">Account</a>
+                        <a class="nav-item nav-link" id="logout" href="{{ url_for('auth.logout') }}">Logout</a>
+                      {% endif %}
                     {% else %}
-                    <a class="nav-item nav-link" id="login" href="/login">Login</a>
-                    <a class="nav-item nav-link" id="sign-up" href="/sign-up">Sign-Up</a>
+                    <a class="nav-item nav-link" id="login" href="{{ url_for('auth.login') }}">Login</a>
+                    <a class="nav-item nav-link" id="sign-up" href="{{url_for('auth.sign_up') }}">Sign-Up</a>
+                    <a class="nav-item nav-link" id="about" href="{{ url_for('views.about') }}">About</a>
                     {% endif %}
                 </div>
             </div>

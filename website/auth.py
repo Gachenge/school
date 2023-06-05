@@ -10,6 +10,9 @@ from flask_login import login_user
 from flask_login import login_required
 from flask_login import logout_user
 from flask_login import current_user
+from website.forms import UpdateAccountForm
+import secrets
+import os
 
 
 auth = Blueprint('auth', __name__)
@@ -24,7 +27,8 @@ def login():
             if storage.authenticate_user(email, password):
                 flash("Login successful", category='success')
                 login_user(user, remember=True)
-                return redirect(url_for('views.home'))
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('views.home'))
             else:
                 flash("Incorect password, try again", category='error')
         else:
@@ -67,3 +71,40 @@ def sign_up():
             flash("Account created!", category='success')
             return redirect(url_for('views.home'))
     return render_template("signup.html", user=current_user)
+
+@auth.route('/admin')
+@login_required
+def admin():
+    if current_user.role == 'admin':
+        return render_template("admin.html", user=current_user)
+    else:
+        flash("You do not have enough permissions to access this page", category='error')
+        return redirect(url_for('views.home'))
+    
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(auth.root_path, 'static/images', picture_fn)
+    form_picture.save(picture_path)
+    return picture_fn
+
+
+@auth.route("/account", methods=['GET', 'POST'])
+@login_required
+def account():
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            current_user.image_file = picture_file
+        current_user.email = form.email.data
+        storage.save()
+        flash("Your account has been updated", 'success')
+        return redirect(url_for('auth.account'))
+    elif request.method == 'GET':
+        form.email.data = current_user.email
+    image_file = url_for('static', filename='images/' + current_user.image_file)
+    return render_template('account.html', user=current_user,
+                           image_file=image_file, form=form)
+
