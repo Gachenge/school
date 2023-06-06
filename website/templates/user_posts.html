@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}Blogs{% endblock %}
 
 {% block content %}
 <script src="{{ url_for('static', filename='script/redirect.js') }}"></script>
@@ -30,41 +30,32 @@
                 </ul>
             </nav>
         </div>
-        
+        {% for post in posts %}
+        <h1 class="mb-3">Posts by {{ user.first_name }} ({{ posts.total}})</h1>
         <article class="media content-section">
           <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + post.author.image_file) }}">
           <div class="media-body">
             <div class="article-metadata">
               <a class="mr-2" href="{{ url_for('views.user_posts', username=post.author.first_name) }}">{{ post.author.first_name }}</a>
               <small class="text-muted">{{ post.created_at.strftime('%Y-%m-%d') }}</small>
-              {% if post.author == current_user %}
-              <div>
-                <a class="btn btn-secondary btn-sm m-l" href="{{ url_for('views.updatepost', post_id=post.blog_id) }}">Update</a>
-                <button type="button" class="btn btn-danger btn-sm m-l" data-toggle="modal" data-target="#deleteModal">Delete</button>
-              </div>
-              {% endif %}
             </div>
-            <h2 class="article-title">{{ post.title }}></h2>
+            <h2><a class="article-title" href="{{ url_for('views.post', post_id=post.blog_id) }}">{{ post.title }}</a></h2>
             <p class="article-content">{{ post.content }}</p>
           </div>
         </article>
-        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="deleteModalLabel">Delete Post?</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <form action="{{ url_for('views.delete_post', post_id=post.blog_id) }}" method="POST">
-                    <input class="btn btn-danger" type="submit" value="Delete">
-                  </form>
-                </div>
-              </div>
+    {% endfor %}
     </div>
+    {% for page_num in range(1, total_pages + 1) %}
+        {% if page_num %}
+          {% if page == page_num %}
+            <a class="btn btn-info mb-4" href="{{ url_for('views.user_posts', username=user.first_name, page=page_num) }}">{{ page_num }}</a>
+          {% else %}
+          <a class="btn btn-outline-info mb-4" href="{{ url_for('views.user_posts', username=user.first_name, page=page_num) }}">{{ page_num }}</a>
+          {% endif %}
+        {% else %}
+        {% endif %}
+    {% endfor %}
 </div>
+
 
 {% endblock %}

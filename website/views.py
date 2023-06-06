@@ -13,17 +13,22 @@ from models.teacher import Teacher
 from models.subjects import Subject
 from models.subject_grades import SubjectGrade
 from models.blog import Blog
-from website.forms import PostForm
+from website.forms import PostForm, requestResetForm, resetPasswordForm, adteacherForm, delteacherForm, upteacherForm
 from flask import abort
+from flask_mail import Message, Mail
 
 views = Blueprint('views', __name__)
+mail = Mail()
 
 @views.route('/')
 @views.route('/home')
 @login_required
 def home():
-    posts = storage.all(Blog).values()
-    return render_template("home.html", user=current_user, posts=posts)
+    page = request.args.get('page', 1, type=int)
+    per_page = 2
+    posts, total_pages = storage.paginate(Blog, page, per_page)
+    return render_template('home.html', posts=posts, user=current_user, total_pages=total_pages)
+
 
 @views.route("/teachers")
 def teachers():
@@ -50,27 +55,15 @@ def subjects():
 
 @views.route("/adteacher", methods=['GET', 'POST'])
 def adteacher():
-    if request.method == 'POST':
-        details = {
-            'name': request.form.get('fname') + ' ' + request.form.get('lname'),
-            'email': request.form.get('email'),
-            'phone': request.form.get('phone'),
-            'subject': request.form.get('subject')
-        }
-        if details['email'] in [teacher.email for teacher in storage.all(Teacher).values()]:
-            flash("The email is already registered", category='error')
-        elif len(details['name']) < 7 or len(request.form.get('fname')) < 3 or len(request.form.get('lname')) < 3:
-            flash("Enter a valid name", category='error')
-        elif len(details['email']) < 5:
-            flash("Enter a valid email", category='error')
-        elif len(details['phone']) != 10 or not details['phone'].isdigit():
-            flash("Enter a valid phone number", category='error')
-        else:
-            teacher = Teacher(**details)
+    if current_user.role == 'admin':
+        form = adteacherForm()
+        if form.validate_on_submit():
+            teacher = Teacher(email=form.email.data, name=form.first_name.data + ' ' + form.last_name.data, phone=form.phone.data)
             storage.new(teacher)
             storage.save()
-            if details['subject'] not in [subject.name for subject in storage.all(Subject).values()]:
-                new_subject = Subject(name=details['subject'], teacher_id=teacher.teacher_id)
+            subjet = form.subject.data
+            if subjet not in [subject.name for subject in storage.all(Subject).values()]:
+                new_subject = Subject(name=subjet, teacher_id=teacher.teacher_id)
                 storage.new(new_subject)
                 storage.save()
                 new_subject.teacher.append(teacher)
@@ -78,13 +71,14 @@ def adteacher():
             else:
                 subjects = storage.all(Subject).values()
                 for subject in subjects:
-                    if subject.name == details['subject']:
+                    if subject.name == subjet:
                         subject.teacher.append(teacher)
                         subject.teacher_id = teacher.teacher_id
                 storage.save()
-        return redirect(url_for("views.teachers"))
-
-    return render_template("adteacher.html", user=current_user)
+            return redirect(url_for("views.teachers"))
+        return render_template("adteacher.html", user=current_user, form=form)
+    else:
+        flash("You do not have sufficient permiossions", 'error')
 
 @views.route("/adstudent", methods=['GET', 'POST'])
 def adstudent():
@@ -167,11 +161,28 @@ def adsubject():
 
 @views.route("/delteacher", methods=['GET', 'POST'])
 def delteacher():
-    if request.method == 'POST':
-        name = request.form.get('fname')+' '+request.form.get('lname')
-        teacher_id = request.form.get('teacher_id')
-        teachers = storage.all(Teacher).values()
-        temp = None
+    if current_user.role == 'admin':
+        form = delteacherForm()
+        if form.validate_on_submit():
+            name = form.first_name.data + ' ' + form.last_name.data
+            id = form.teacher_id.data
+            teachers = storage.all(Teacher).values()
+            new = None
+            for teacher in teachers:
+                if teacher.name == name and teacher.teacher_id == int(id):
+                    new = teacher
+                    break
+            if new is None:
+                flash("No teacher found with that name and id", 'error')
+            else:
+                storage.delete(new)
+                storage.save()
+            return redirect(url_for('views.teachers'))
+        return render_template("delteacher.html", user=current_user, form=form)
+    else:
+        flash("You do not have sufficient permissions")
+
+        
         for teacher in teachers:
             if teacher.name == name and teacher.teacher_id == int(teacher_id):
                 temp = teacher
@@ -221,19 +232,17 @@ def delsubject():
 
 @views.route("/upteacher", methods=['GET', 'POST'])
 def upteacher():
-    if request.method == 'POST':
-        details = {
-            'name': request.form.get('fname')+' '+request.form.get('lname'),
-            'email': request.form.get('email'),
-            'phone': request.form.get('phone'),
-            'subject': request.form.get('subject'),
-            'teacher_id': request.form.get('teacher_id')
-        }
-        if len(details['email']) < 5:
-            flash("Enter a valid email address", category='error')
-        elif len(details['phone']) != 10 or not details['phone'].isdigit():
-            flash("Enter a valid phone number", category='error')
-        else:
+    if current_user.role == 'admin':
+        form = upteacherForm()
+        if form.validate_on_submit():
+            details = {
+                'name': form.first_name.data + ' ' + form.last_name.data,
+                'teacher_id': form.teacher_id.data,
+                'email': form.email.data,
+                'phone': form.phone.data,
+                'subject': form.subject.data
+            }
+
             teachers = storage.all(Teacher).values()
             new = None
             sub = None
@@ -257,8 +266,10 @@ def upteacher():
                     sub.teacher.append(new)
                 flash("Teacher Updated", category='success')
             storage.save()
-        return redirect(url_for('views.teachers'))
-    return render_template("upteacher.html", user=current_user)
+            return redirect(url_for('views.teachers'))
+        return render_template("upteacher.html", user=current_user, form=form)
+    else:
+        flash("You do not have enough permissions", 'error')
 
 @views.route("/upstudent", methods=['GET', 'POST'])
 def upstudent():
@@ -379,10 +390,10 @@ def aduser():
 @views.route("/deluser", methods=['GET', 'POST'])
 def deluser():
     if request.method == 'POST':
-        email = request.form.get('email')
+        user_id = request.form.get('user_id')
         users = storage.all(User).values()
         for user in users:
-            if user.email == email:
+            if user.id == user_id:
                 storage.delete(user)
         storage.save()
         return redirect(url_for('views.users'))
@@ -469,4 +480,65 @@ def delete_post(post_id):
         storage.save()
         flash("Your post has been deleted", 'success')
         return redirect(url_for('views.home'))
+
+def send_reset_email(user):
+    token = User.get_reset_token()
+    msg = Message('Password Reset Request', sender='noreply@demo.com', recipients=[user.email])
+    msg.body = f"""To reset your password, visit this link:
+{url_for('views.reset_token', token=token, _external=True)}
+If you did not make this request, simply ignore this email and nothing will be changed.
+"""
+    mail.send(msg)
+
+@views.route("/reset_password", methods=['GET', 'POST'])
+def reset_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('views.home'))
+    form = requestResetForm()
+    if form.validate_on_submit():
+        new = None
+        users= storage.all(User).values()
+        for user in users:
+            if user.email == form.email.data:
+                new=user
+        if user is None:
+            flash("Email not registered", 'error')
+        else:
+            flash("an email has been sent with instructions to reset your password", 'info')
+        return redirect(url_for('auth.login'))
+    return render_template('reset_request.html', user=current_user, form=form)
+
+@views.route("/reset_password/<token>", methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('views.home'))
+    user = User.verify_reset_token(token)
+    if not user:
+        flash("That is an invalid or expired token", 'warning')
+        return redirect(url_for('views.reset_password'))
+    form = resetPasswordForm()
+    if form.validate_on_submit():
+        user = user(password=form.password.data)
+        storage.save()
+        flash("Your password has been updated. You can now log in")
+        return redirect(url_for('auth.login'))
+    return render_template('reset_token.html', user=current_user, form=form)
+
+
+@views.route('/user/<string:username>')
+@login_required
+def user_posts(username):
+    users= storage.all(User).values()
+    for user in users:
+        if user.first_name == username:
+            new= user
+    if user is None:
+        abort(404)    
+    page = request.args.get('page', 1, type=int)
+    per_page = 2
+    posts, total_pages = storage.paginate(Blog, page, per_page)
+    for post in posts:
+        if post.author.first_name == new.first_name:
+            pos = post
+    return render_template('user_posts.html', pos=posts, new=user, user=current_user, total_pages=total_pages)
     

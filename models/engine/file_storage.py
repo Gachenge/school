@@ -14,6 +14,7 @@ from hashlib import md5
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 from models.relationship_tables import subject_student_association
+from flask_sqlalchemy import Pagination
 
 classes = {"User": User, "Student": Student, "Main": Main, "Blog": Blog,
            "Teacher": Teacher, "Subject": Subject, "SubjectGrade": SubjectGrade}
@@ -158,3 +159,15 @@ class FileStorage:
             self.rollback()
             print(f"Error retrieving student grade: {str(e)}")
         return grade
+
+    def paginate(self, cls, page):
+        try:
+            query = self.__session.query(cls)
+            per_page = 1
+            posts = query.paginate(page, per_page)
+        except Exception as e:
+            self.rollback()
+            print("Error paginating:", str(e))
+            return None
+
+        return posts

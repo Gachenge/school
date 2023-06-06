@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """handles storage in database"""
+import math
 from sqlalchemy import create_engine
 from os import getenv
 from models.main import Main
@@ -16,6 +17,7 @@ from hashlib import md5
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 from models.relationship_tables import subject_student_association
+
 
 classes = {"User": User, "Student": Student, "Main": Main, "Blog": Blog,
            "Teacher": Teacher, "Subject": Subject, "SubjectGrade": SubjectGrade}
@@ -152,3 +154,17 @@ class DBStorage:
             self.rollback()
             print(f"Error retrieving student grade: {str(e)}")
         return grade
+    
+    def paginate(self, cls, page, per_page):
+        try:
+            offset = (page - 1) * per_page
+            query = self.__session.query(cls).order_by(Blog.created_at.desc()).offset(offset).limit(per_page)
+            posts = query.all()
+            total_posts = self.__session.query(cls).count()
+            total_pages = math.ceil(total_posts / per_page)
+        except Exception as e:
+            self.rollback()
+            print("Error paginating:", str(e))
+            return None, None
+
+        return posts, total_pages

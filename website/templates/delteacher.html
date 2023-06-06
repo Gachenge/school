@@ -1,24 +1,57 @@
 {% extends "base.html" %}
-{% block title %}Delete teacher{% endblock %}
+{% block title %}Add Teacher{% endblock %}
 
 {% block content %}
-<form method="POST">
-    <h3 align="center">Delete teacher</h3>
-    <div class="form-group">
-        <label for="fname">First name</label>
-        <input type="fname" class="form-control" id="fname" name="fname" placeholder="Enter first name">
-    </div>
-    <div class="form-group">
-        <label for="lname">Last name</label>
-        <input type="lname" class="form-control" id="lname" name="lname" placeholder="Enter last name">
-    </div>
-    <div class="form-group">
-        <label for="teacher_id">Teacher I.D</label>
-        <input type="teacher_id" class="form-control" id="teacher_id" name="teacher_id" placeholder="Enter teacher I.D">
-    </div>
-    <br>
-    <button type="submit" class="btn btn-primary">Delete</button>
-</form>
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Join Today</legend>
+            <div class="form-group">
+                {{ form.first_name.label(class="form-control-label") }}
 
+                {% if form.first_name.errors %}
+                    {{ form.first_name(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.first_name.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.first_name(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.last_name.label(class="form-control-label") }}
+                {% if form.last_name.errors %}
+                    {{ form.last_name(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.last_name.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.last_name(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.teacher_id.label(class="form-control-label") }}
+                {% if form.teacher_id.errors %}
+                    {{ form.teacher_id(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.teacher_id.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.teacher_id(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+</div>
 
 {% endblock %}

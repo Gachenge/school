@@ -4,38 +4,17 @@
 {% block content %}
 <script src="{{ url_for('static', filename='script/redirect.js') }}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/body.css') }}">
-<nav class="navbar bg-body-tertiary">
-    <div class="container-fluid">
-      <a class="navbar-brand">School blog</a>
-      <form class="d-flex"  role="search">
-        <input class="form-control me-2" type="search" id="searchQuery" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="button" onclick="search()">Search</button>
-      </form>
-    </div>
-</nav>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-3">
-            <nav class="navbar bg-light">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('views.home') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('views.about') }}">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('views.adblog') }}">Create a blog</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+<div class="sticky-top">
+  <a class="btn btn-info mb-4" href="{{ url_for('views.home')}}">Home</a>
+  <a class="btn btn-info mb-4" href="{{ url_for('views.adblog')}}">Create Blog</a>
+  <a class="btn btn-info mb-4" href="{{ url_for('views.about')}}">About</a>
+</div>
         {% for post in posts %}
         <article class="media content-section">
           <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + post.author.image_file) }}">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="#">{{ post.author.first_name }}</a>
+              <a class="mr-2" href="">{{ post.author.first_name }}</a>
               <small class="text-muted">{{ post.created_at.strftime('%Y-%m-%d') }}</small>
             </div>
             <h2><a class="article-title" href="{{ url_for('views.post', post_id=post.blog_id) }}">{{ post.title }}</a></h2>
@@ -44,6 +23,16 @@
         </article>
     {% endfor %}
     </div>
+    {% for page_num in range(1, total_pages + 1) %}
+        {% if page_num %}
+          {% if page == page_num %}
+            <a class="btn btn-info mb-4" href="{{ url_for('views.home', page=page_num) }}">{{ page_num }}</a>
+          {% else %}
+          <a class="btn btn-outline-info mb-4" href="{{ url_for('views.home', page=page_num) }}">{{ page_num }}</a>
+          {% endif %}
+        {% else %}
+        {% endif %}
+    {% endfor %}
 </div>
 
 

@@ -10,31 +10,32 @@ from flask_login import login_user
 from flask_login import login_required
 from flask_login import logout_user
 from flask_login import current_user
-from website.forms import UpdateAccountForm
+from website.forms import UpdateAccountForm, signUp, LoginForm
 import secrets
 import os
-
+from flask_bcrypt import Bcrypt
 
 auth = Blueprint('auth', __name__)
+bcrypt = Bcrypt()
 
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        user = storage.check_email(email)
-        if user:
-            if storage.authenticate_user(email, password):
-                flash("Login successful", category='success')
-                login_user(user, remember=True)
-                next_page = request.args.get('next')
-                return redirect(next_page) if next_page else redirect(url_for('views.home'))
-            else:
-                flash("Incorect password, try again", category='error')
+    if current_user.is_authenticated:
+        return redirect(url_for('views.home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = storage.check_email(form.email.data)
+        if user is None:
+            flash("Check your email address", 'error')
+        elif bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('views.home'))
         else:
-            flash("Email does not exist", category='error')
-    return render_template("login.html", user=current_user)
+            flash("Check password and try again", 'error')
+    return render_template("login.html", form=form, user=current_user)
 
+        
 @auth.route("/logout")
 @login_required
 def logout():
@@ -43,35 +44,20 @@ def logout():
 
 @auth.route("/sign-up", methods=['GET', 'POST'])
 def sign_up():
-    if request.method == 'POST':
-        details = {
-            'email': request.form.get('email'),
-            'first_name': request.form.get('firstName'),
-            'last_name': request.form.get('lastName'),
-            'password': request.form.get('password1'),
-            'password2': request.form.get('password2')
-        }
-        if storage.check_email(details.get('email')):
-            flash("Email is already registered", category='error')               
-        elif len(details['email']) < 6:
-            flash("Enter a valid E-Mail.", category='error')
-        elif len(details['first_name']) < 3:
-            flash("First name must be greater than 2 characters", category='error')
-        elif len(details['last_name']) < 3:
-            flash("Last name must be greater than 2 characters", category='error')
-        elif (details['password']) != (details['password2']):
-            flash("Passwords do not match", category='error')
-        elif len(details['password']) < 7:
-            flash("password must be at least 7 characters long", category='error')
-        else:
-            user = User(**details)
-            storage.new(user)
-            storage.save()
-            login_user(user, remember=True)
-            flash("Account created!", category='success')
-            return redirect(url_for('views.home'))
-    return render_template("signup.html", user=current_user)
-
+    if current_user.is_authenticated:
+        return redirect(url_for('views.home'))
+    form = signUp()
+    if form.validate_on_submit():
+        hashed = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(first_name=form.first_name.data, last_name=form.last_name.data,
+                    email=form.email.data, password=hashed)
+        storage.new(user)
+        storage.save()
+        flash("Your account has been been created. You can now log in", 'success')
+        return redirect(url_for('auth.login'))
+    return render_template("signup.html", user=current_user, form=form)
+        
+            
 @auth.route('/admin')
 @login_required
 def admin():

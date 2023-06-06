@@ -33,7 +33,6 @@
                         <a class="nav-item nav-link" id="home" href="{{ url_for('views.home') }}">Home</a>
                         <a class="nav-item nav-link" id="logout" href="{{ url_for('auth.logout') }}">Logout</a>
                       {% else %}
-                        <a class="nav-item nav-link" id="account" href="{{ url_for('views.adblog') }}">New Post</a>
                         <a class="nav-item nav-link" id="account" href="{{ url_for('auth.account') }}">Account</a>
                         <a class="nav-item nav-link" id="logout" href="{{ url_for('auth.logout') }}">Logout</a>
                       {% endif %}

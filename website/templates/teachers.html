@@ -33,7 +33,7 @@
         <tbody>
     </table>
 </div>
-<button type="button" class="btn btn-primary" onclick="adteacher()">Add Teacher</button>
-<button type="button" class="btn btn-primary" onclick="delteacher()">Delete Teacher</button>
-<button type="button" class="btn btn-primary" onclick="upteacher()">Update Teacher</button>
+<a class="btn btn-secondary" href="{{ url_for('views.adteacher') }}">Add Teacher</a>
+<a class="btn btn-secondary" href="{{ url_for('views.delteacher') }}">Delete Teacher</a>
+<a class="btn btn-secondary" href="{{ url_for('views.upteacher') }}">Update Teacher</a>
 {% endblock %}
