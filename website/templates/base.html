@@ -14,10 +14,6 @@
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       crossorigin="anonymous"
     />
-    <link
-    rel="stylesheet"
-    href="{{ url_for('static', filename='styles/body.css') }}">
-
     <title>{% block title %}Home{% endblock %}</title>
     </head>
     <body>
@@ -29,11 +25,14 @@
                 <div class="navbar-nav ml-auto">
                     {% if user.is_authenticated %}
                       {% if current_user.role == 'admin' %}
-                        <a class="nav-item nav-link" id="admin" href="{{ url_for('auth.admin') }}">Admin</a>
                         <a class="nav-item nav-link" id="home" href="{{ url_for('views.home') }}">Home</a>
+                        <a class="nav-item nav-link" id="admin" href="{{ url_for('auth.admin') }}">Admin</a>
+                        <a class="nav-item nav-link" id="blog" href="{{ url_for('views.blog') }}">Blog</a>
                         <a class="nav-item nav-link" id="logout" href="{{ url_for('auth.logout') }}">Logout</a>
                       {% else %}
-                        <a class="nav-item nav-link" id="account" href="{{ url_for('auth.account') }}">Account</a>
+                        <a class="nav-item nav-link" id="home" href="{{ url_for('views.home') }}">Home</a>
+                        <a class="nav-item nav-link" id="account" href="{{ url_for('auth.account') }}">{{ current_user.first_name }}</a>
+                        <a class="nav-item nav-link" id="blog" href="{{ url_for('views.blog') }}">Blog</a>
                         <a class="nav-item nav-link" id="logout" href="{{ url_for('auth.logout') }}">Logout</a>
                       {% endif %}
                     {% else %}
@@ -41,6 +40,8 @@
                     <a class="nav-item nav-link" id="sign-up" href="{{url_for('auth.sign_up') }}">Sign-Up</a>
                     <a class="nav-item nav-link" id="about" href="{{ url_for('views.about') }}">About</a>
                     {% endif %}
+                </div>
+                <div class="navbar-nav me-auto">
                 </div>
             </div>
         </nav>

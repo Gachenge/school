@@ -11,22 +11,6 @@ body {
     color: #444444;
   }
   
-  .bg-steel {
-    background-color: #5f788a;
-  }
-  
-  .site-header .navbar-nav .nav-link {
-    color: #cbd5db;
-  }
-  
-  .site-header .navbar-nav .nav-link:hover {
-    color: #ffffff;
-  }
-  
-  .site-header .navbar-nav .nav-link.active {
-    font-weight: 500;
-  }
-  
   .content-section {
     background: #ffffff;
     padding: 10px 20px;
@@ -34,8 +18,7 @@ body {
     border-radius: 3px;
     margin-bottom: 20px;
     margin-left: 20%;
-    width: 60%;
-  
+    width: 70%;
   }
   
   .article-title {
@@ -49,6 +32,7 @@ body {
   
   .article-content {
     white-space: pre-line;
+    resize: both;
   }
   
   .article-img {
@@ -84,3 +68,14 @@ body {
   .account-heading {
     font-size: 2.5rem;
   }
+
+.divine {
+  background-image: url(../web_images/path.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.desus {
+  text-align: center;
+  margin-top: 20%;
+}

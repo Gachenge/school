@@ -2,22 +2,20 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<script src="../static/script/redirect.js"></script>
-
 <br>
 <div class="container text-center">
     <div class="row">
       <div class="col">
-        <button type="button" class="btn btn-outline-primary btn-lg" onclick="teachers()">Teachers</button>
+        <a class="btn btn-outline-primary btn-lg" href="{{ url_for('views.teachers') }}">Teachers</a>
     </div>
       <div class="col">
-        <button type="button" class="btn btn-outline-primary btn-lg" onclick="student()">Students</button>
+        <a class="btn btn-outline-primary btn-lg" href="{{ url_for('views.students') }}">Students</a>
       </div>
       <div class="col">
-        <button type="button" class="btn btn-outline-primary btn-lg" onclick="subjects()">Subjects</button>
+        <a class="btn btn-outline-primary btn-lg" href="{{ url_for('views.subjects') }}">Subjects</a>
       </div>
       <div class="col">
-        <button type="button" class="btn btn-outline-primary btn-lg" onclick="users()">Users</button>
+        <a class="btn btn-outline-primary btn-lg" href="{{ url_for('views.users') }}">Users</a>
       </div>
     </div>
   </div>

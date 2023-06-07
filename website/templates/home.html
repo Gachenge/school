@@ -1,39 +1,32 @@
-{% extends "base.html" %}
-{% block title %}Home{% endblock %}
-
-{% block content %}
-<script src="{{ url_for('static', filename='script/redirect.js') }}"></script>
-<link rel="stylesheet" href="{{ url_for('static', filename='styles/body.css') }}">
-<div class="sticky-top">
-  <a class="btn btn-info mb-4" href="{{ url_for('views.home')}}">Home</a>
-  <a class="btn btn-info mb-4" href="{{ url_for('views.adblog')}}">Create Blog</a>
-  <a class="btn btn-info mb-4" href="{{ url_for('views.about')}}">About</a>
-</div>
-        {% for post in posts %}
-        <article class="media content-section">
-          <img class="rounded-circle article-img" src="{{ url_for('static', filename='images/' + post.author.image_file) }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="">{{ post.author.first_name }}</a>
-              <small class="text-muted">{{ post.created_at.strftime('%Y-%m-%d') }}</small>
-            </div>
-            <h2><a class="article-title" href="{{ url_for('views.post', post_id=post.blog_id) }}">{{ post.title }}</a></h2>
-            <p class="article-content">{{ post.content }}</p>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/body.css') }}">
+</head>
+  <body class="divine">
+    <div class="text-bg-primary p-3">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg bg-body-primary">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('views.home') }}">Home</a>
+            <a class="navbar-brand" href="{{ url_for('views.blog') }}">Blog</a>
+            <a class="navbar-brand" href="{{ url_for('auth.login') }}">Login</a>
+            <a class="navbar-brand" href="{{ url_for('auth.sign_up') }}">Sign Up</a>
+            <a class="navbar-brand" href="{{ url_for('views.about') }}">About</a>
           </div>
-        </article>
-    {% endfor %}
-    </div>
-    {% for page_num in range(1, total_pages + 1) %}
-        {% if page_num %}
-          {% if page == page_num %}
-            <a class="btn btn-info mb-4" href="{{ url_for('views.home', page=page_num) }}">{{ page_num }}</a>
-          {% else %}
-          <a class="btn btn-outline-info mb-4" href="{{ url_for('views.home', page=page_num) }}">{{ page_num }}</a>
-          {% endif %}
-        {% else %}
-        {% endif %}
-    {% endfor %}
-</div>
+        </nav>
+      </div>
+      </div>
 
+      <p class="desus">
+        School Administration system. Sign Up for an account and gain access<br>
+        to great blogs. We also offer a student grading system and a teacher Management system.
+      </p>
 
-{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+  </body>
+</html>

@@ -13,21 +13,20 @@ from models.teacher import Teacher
 from models.subjects import Subject
 from models.subject_grades import SubjectGrade
 from models.blog import Blog
-from website.forms import PostForm, requestResetForm, resetPasswordForm, adteacherForm, delteacherForm, upteacherForm
+from website.forms import (PostForm, requestResetForm, resetPasswordForm, delstudentForm, adsubjectForm,
+                           adteacherForm, delteacherForm, upteacherForm, adstudentForm, upstudentForm, delsubjectForm)
 from flask import abort
 from flask_mail import Message, Mail
 
 views = Blueprint('views', __name__)
 mail = Mail()
 
-@views.route('/')
-@views.route('/home')
-@login_required
-def home():
+@views.route('/blog')
+def blog():
     page = request.args.get('page', 1, type=int)
     per_page = 2
     posts, total_pages = storage.paginate(Blog, page, per_page)
-    return render_template('home.html', posts=posts, user=current_user, total_pages=total_pages)
+    return render_template('blog.html', posts=posts, user=current_user, total_pages=total_pages)
 
 
 @views.route("/teachers")
@@ -82,81 +81,83 @@ def adteacher():
 
 @views.route("/adstudent", methods=['GET', 'POST'])
 def adstudent():
-    if request.method == 'POST':
-        details = {
-            'name': request.form.get('fname') + ' ' + request.form.get('lname'),
-            'subject': request.form.get('subject'),
-            'grade': request.form.get('grade')
-        }
-        if details['name']in [student.name for student in storage.all(Student).values()]:
-            flash("Student is already registered", category='error')
-        elif len(details['name']) < 7 or len(request.form.get('fname')) < 3 or len(request.form.get('lname')) < 3:
-            flash("Enter a valid name", category='error')
-        elif len(details['subject']) < 3:
-            flash("Enter a valid subject name", category='error')
-        elif not details['grade']:
-            flash("Enter the grade", category='error')
-        else:
-            student = Student(**details)
-            storage.new(student)
-            storage.save()
-            if details['subject'] not in [subject.name for subject in storage.all(Subject).values()]:
-                new_subject = Subject(name=details['subject'])
-                storage.new(new_subject)
-                storage.save()
-                new_subject.student.append(student)
-                storage.save()
-                flash("Created new subject", category='success')
-                grad = SubjectGrade(subject_id=new_subject.subject_id, student_id=student.student_id, grade=details['grade'])
-                storage.new(grad)
+    if current_user.role == 'admin':
+        form = adstudentForm()
+        if form.validate_on_submit():
+            details = {
+                'name': form.first_name.data + ' ' + form.last_name.data,
+                'subject': form.subject.data,
+                'grade': form.grade.data
+            }
+            students = storage.all(Student).values()
+            if details['name'] in [student.name for student in students]:
+                flash("Student already registered", 'error')
             else:
-                subjects = storage.all(Subject).values()
-                for subject in subjects:
-                    if subject.name == details['subject']:
-                        subject.student.append(student)
-                        grad = SubjectGrade(subject_id=subject.subject_id, student_id=student.student_id, grade=details['grade'])
-                        storage.new(grad)
+                student = Student(**details)
+                storage.new(student)
                 storage.save()
-        return redirect(url_for('views.students'))
-    return render_template("adstudent.html", user=current_user)
+                if details['subject'] not in [subject.name for subject in storage.all(Subject).values()]:
+                    new_subject = Subject(name=details['subject'])
+                    storage.new(new_subject)
+                    storage.save()
+                    new_subject.student.append(student)
+                    storage.save()
+                    flash("Created new subject", category='success')
+                    grad = SubjectGrade(subject_id=new_subject.subject_id, student_id=student.student_id, grade=details['grade'])
+                    storage.new(grad)
+                else:
+                    subjects = storage.all(Subject).values()
+                    for subject in subjects:
+                        if subject.name == details['subject']:
+                            subject.student.append(student)
+                            grad = SubjectGrade(subject_id=subject.subject_id, student_id=student.student_id, grade=details['grade'])
+                            storage.new(grad)
+                    storage.save()
+            return redirect(url_for('views.students'))
+        return render_template("adstudent.html", user=current_user, form=form)
+    else:
+        flash("You do not have sufficient permissions", 'error')
 
 @views.route("/adsubject", methods=['GET', 'POST'])
 def adsubject():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        teacher_name = request.form.get('teacher_fname')+' '+request.form.get('teacher_lname')
-        student_name = request.form.get('student_fname')+' '+request.form.get('student_lname')
-        grades = request.form.get('grade')
-        if name in [subject.name for subject in storage.all(Subject).values()]:
-            flash("Subject is already registered", category='error')
-        elif len(name) < 3:
-            flash("Enter a valid subject name", category='error')
-        elif teacher_name not in [teacher.name for teacher in storage.all(Teacher).values()]:
-            flash("Teacher not registered", category='error')
-        elif student_name not in [student.name for student in storage.all(Student).values()]:
-            flash("Student is not registered", category='error')
-        else:
-            teach = None
+    if current_user.role == 'admin':
+        form = adsubjectForm()
+        if form.validate_on_submit():
+            name = form.name.data
+            teacher_name = form.tfname.data + ' ' + form.tlname.data
+            student_name = form.sfname.data + ' ' + form.slname.data
+            grade = form.grade.data
+            subjects = storage.all(Subject).values()
             teachers = storage.all(Teacher).values()
-            for teacher in teachers:
-                if teacher.name == teacher_name:
-                    teach = teacher
-            stude = None
             students = storage.all(Student).values()
-            for student in students:
-                if student.name == student_name:
-                    stude = student
-            subject = Subject(name=name, teacher_id=teach.teacher_id, student_id=stude.student_id)
-            storage.new(subject)
-            teach.subjects.append(subject)
-            stude.subjects.append(subject)
-            storage.save()
-            grade = SubjectGrade(grade=grades, student_id=stude.student_id, subject_id=subject.subject_id)
-            storage.new(grade)
-            storage.save()
-            flash("New subject added", 'success')
-        return redirect(url_for('views.subjects'))
-    return render_template("adsubject.html", user=current_user)
+            if any(subject.name == name for subject in subjects):
+                flash("Subject is already registered", 'error')
+            else:
+                teach = next((teacher for teacher in teachers if teacher.name == teacher_name), None)
+                stude = next((student for student in students if student.name == student_name), None)
+                if teacher_name and not teach:
+                    flash("Teacher does not exist. First register the teacher", 'error')
+                elif student_name and not stude:
+                    flash("Student does not exist. First register the student", 'error')
+                else:
+                    subject = Subject(name=name)
+                    storage.new(subject)
+                    if teach:
+                        teach.subjects.append(subject)
+                        subject.teacher_id = teach.teacher_id
+                    if stude:
+                        stude.subjects.append(subject)
+                        subject.student_id = stude.student_id
+                    if grade:
+                        grad = SubjectGrade(grade=grade, student_id=stude.student_id, subject_id=subject.subject_id)
+                        storage.new(grad)
+                    storage.save()
+                    flash("New subject added", 'success')
+            return redirect(url_for('views.subjects'))
+        return render_template("adsubject.html", user=current_user, form=form)
+    else:
+        flash("You do not have sufficient permissions", 'error')
+
 
 
 @views.route("/delteacher", methods=['GET', 'POST'])
@@ -182,53 +183,54 @@ def delteacher():
     else:
         flash("You do not have sufficient permissions")
 
-        
-        for teacher in teachers:
-            if teacher.name == name and teacher.teacher_id == int(teacher_id):
-                temp = teacher
-        if temp is None:
-            flash("Check the details supplied and correct them", category='error')
-        else:
-            storage.delete(temp)
-            storage.save()
-        return redirect(url_for('views.teachers'))
-    return render_template("delteacher.html", user=current_user)
 
 @views.route("/delstudent", methods=['GET', 'POST'])
 def delstudent():
-    if request.method == 'POST':
-        name = request.form.get("fname")+' '+request.form.get('lname')
-        student_id = request.form.get('student_id')
-        students = storage.all(Student).values()
-        temp = None
-        for student in students:
-            if student.name == name and student.student_id == int(student_id):
-                temp = student
-        if temp is None:
-            flash("Check the details and ensure they are correct", category='error')
-        else:
-            storage.delete(temp)
-            storage.save()
-        return redirect(url_for('views.students'))
-    return render_template("delstudents.html", user=current_user)
+    if current_user.role == 'admin':
+        form = delstudentForm()
+        if form.validate_on_submit():
+            name = form.first_name.data + ' ' + form.last_name.data
+            id = form.student_id.data
+            students = storage.all(Student).values()
+            new = None
+            for student in students:
+                if student.name == name and student.student_id == int(id):
+                    new = student
+                    break
+            if new is None:
+                flash("No teacher found with that name and id", 'error')
+            else:
+                storage.delete(new)
+                storage.save()
+            return redirect(url_for('views.students'))
+        return render_template("delstudents.html", user=current_user, form=form)
+    else:
+        flash("You do not have sufficient permissions")
+
 
 @views.route("/delsubject", methods=['GET', 'POST'])
 def delsubject():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        subject_id = request.form.get('subject_id')
-        subjects = storage.all(Subject).values()
-        temp = None
-        for subject in subjects:
-            if subject.name == name and subject.subject_id == int(subject_id):
-                temp = subject
-        if temp is None:
-            flash("Check the details and ensure they are correct", category='error')
-        else:
-            storage.delete(temp)
-            storage.save()
-        return redirect(url_for('views.subjects'))
-    return render_template("delsubjects.html", user=current_user)
+    if current_user.role == 'admin':
+        form = delsubjectForm()
+        if form.validate_on_submit():
+            name = form.name.data
+            id = form.subject_id.data
+            subjects = storage.all(Subject).values()
+            new = None
+            for subject in subjects:
+                if subject.name == name and subject.subject_id == int(id):
+                    new = subject
+                    break
+            if new is None:
+                flash("No subject found with that name and id", 'error')
+            else:
+                storage.delete(new)
+                storage.save()
+            return redirect(url_for('views.subjects'))
+        return render_template("delsubjects.html", user=current_user, form=form)
+    else:
+        flash("You do not have sufficient permissions")
+
 
 @views.route("/upteacher", methods=['GET', 'POST'])
 def upteacher():
@@ -271,43 +273,48 @@ def upteacher():
     else:
         flash("You do not have enough permissions", 'error')
 
+
 @views.route("/upstudent", methods=['GET', 'POST'])
 def upstudent():
-    if request.method == 'POST':
-        details = {
-            'name': request.form.get("fname")+' '+request.form.get('lname'),
-            'student_id': request.form.get('student_id'),
-            'grade': request.form.get('grade'),
-            'subject': request.form.get('subject')
-        }
-        if len(details['name']) < 7 or len(request.form.get('fname')) < 3 or len(request.form.get('lname')) < 3:
-            flash("Enter a valid name", category='error')
-        students = storage.all(Student).values()
-        new = None
-        for student in students:
-            if student.name == details['name'] or student.student_id == int(details['student_id']):
-                new = student
-        if new == None:
-            flash("Check the student name and sw.students.clear()tudent ID", category='error')
-        else:
-            for key, value in details.items():
-                setattr(new, key, value)
-            subjects = storage.all(Subject).values()
-            for subject in subjects:
-                if subject.name == details['subject']:
-                    sub = subject
-            if details['subject'] not in [subject.name for subject in storage.all(Subject).values()]:
-                subject = Subject(name=details['subject'], teacher_id=new.teacher_id)
-                storage.new(subject)
-                subject.student.append(new)
+    if current_user.role == 'admin':
+        form = upstudentForm()
+        if form.validate_on_submit():
+            details = {
+                'name': form.first_name.data + ' ' + form.last_name.data,
+                'student_id': form.student_id.data,
+                'subject': form.subject.data,
+                'grade': form.grade.data,
+            }
+            students = storage.all(Student).values()
+            new = None
+            sub = None
+            for student in students:
+                if student.name == details['name'] and student.student_id == int(details['student_id']):
+                    new = student
+            if new == None:
+                flash("Enter the correct values for student name and student id", category='error')
             else:
-                sub.student.append(new)
-            grade = SubjectGrade(grade=details['grade'], student_id=new.student_id)
-            storage.new(grade)
-            flash("Student Updated", category='success')
-        storage.save()
-        return redirect(url_for('views.students'))
-    return render_template("upstudent.html", user=current_user)
+                for key, value in details.items():
+                    setattr(new, key, value)
+                subjects = storage.all(Subject).values()
+                for subject in subjects:
+                    if subject.name == details['subject']:
+                        sub = subject
+                if details['subject'] not in [subject.name for subject in storage.all(Subject).values()]:
+                    subject = Subject(name=details['subject'], student_id=new.student_id)
+                    storage.new(subject)
+                    subject.student.append(new)
+                else:
+                    sub.student.append(new)
+                flash("Student Updated", category='success')
+            storage.save()
+            grad = SubjectGrade(grade=details['grade'], subject_id=sub.subject_id, student_id=new.student_id)
+            storage.new(grad)
+            storage.save()
+            return redirect(url_for('views.students'))
+        return render_template("upstudent.html", user=current_user, form=form)
+    else:
+        flash("You do not have enough permissions", 'error')
 
 @views.route("/upsubject", methods=['GET', 'POST'])
 def upsubject():
@@ -332,7 +339,6 @@ def upsubject():
         else:
             for key, value in details.items():
                 setattr(new, key, value)
-
             stude = None
             teach = None
             teachers = storage.all(Teacher).values()
@@ -355,10 +361,12 @@ def upsubject():
         return redirect(url_for('views.subjects'))
     return render_template("upsubject.html", user=current_user)
 
+
 @views.route("/users")
 def users():
     users = storage.all(User).values()
     return render_template("users.html", user=current_user, users=users)
+
 
 @views.route("/aduser", methods=['GET', 'POST'])
 def aduser():
@@ -387,6 +395,7 @@ def aduser():
         return redirect(url_for('views.users'))
     return render_template("aduser.html", user=current_user)
 
+
 @views.route("/deluser", methods=['GET', 'POST'])
 def deluser():
     if request.method == 'POST':
@@ -412,9 +421,11 @@ def adnuser():
         return redirect(url_for('auth.admin'))
     return render_template("admnuser.html", user=current_user)
 
+
 @views.route('/about')
 def about():
     return render_template('about.html', user=current_user)
+
 
 @views.route("/post/new", methods=['GET', 'POST'])
 @login_required
@@ -428,6 +439,7 @@ def adblog():
         return redirect(url_for('views.home'))
     return render_template('create_post.html', user=current_user, form=form, legend='New post')
 
+
 @views.route("/post/<int:post_id>")
 def post(post_id):
     posts = storage.all(Blog).values()
@@ -438,6 +450,7 @@ def post(post_id):
     if new == None:
         abort(404)
     return render_template('post.html', post=new, user=current_user)
+
 
 @views.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
 @login_required
@@ -463,6 +476,7 @@ def updatepost(post_id):
         form.content.data = post.content
     return render_template('create_post.html', user=current_user, form=form, legend='Update post')
 
+
 @views.route("/post/<int:post_id>/delete", methods=['POST'])
 @login_required
 def delete_post(post_id):
@@ -481,6 +495,7 @@ def delete_post(post_id):
         flash("Your post has been deleted", 'success')
         return redirect(url_for('views.home'))
 
+
 def send_reset_email(user):
     token = User.get_reset_token()
     msg = Message('Password Reset Request', sender='noreply@demo.com', recipients=[user.email])
@@ -489,6 +504,7 @@ def send_reset_email(user):
 If you did not make this request, simply ignore this email and nothing will be changed.
 """
     mail.send(msg)
+
 
 @views.route("/reset_password", methods=['GET', 'POST'])
 def reset_password():
@@ -507,6 +523,7 @@ def reset_password():
             flash("an email has been sent with instructions to reset your password", 'info')
         return redirect(url_for('auth.login'))
     return render_template('reset_request.html', user=current_user, form=form)
+
 
 @views.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):
@@ -541,4 +558,8 @@ def user_posts(username):
         if post.author.first_name == new.first_name:
             pos = post
     return render_template('user_posts.html', pos=posts, new=user, user=current_user, total_pages=total_pages)
-    
+
+@views.route('/')
+@views.route('/home')
+def home():
+    return render_template("home.html", user=current_user)

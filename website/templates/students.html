@@ -41,8 +41,8 @@
         </tbody>
     </table>
 </div>
-<button type="button" class="btn btn-primary" onclick="adstudent()">Add Student</button>
-<button type="button" class="btn btn-primary" onclick="delstudent()">Delete Student</button>
-<button type="button" class="btn btn-primary" onclick="upstudent()">Update Student</button>
+<a class="btn btn-outline-secondary btn-lg" href="{{ url_for('views.adstudent') }}">Add students</a>
+<a class="btn btn-outline-secondary btn-lg" href="{{ url_for('views.delstudent') }}">Delete students</a>
+<a class="btn btn-outline-secondary btn-lg" href="{{ url_for('views.upstudent') }}">Update students</a>
 
 {% endblock %}

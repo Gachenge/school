@@ -3,7 +3,6 @@
 
 {% block content %}
 <link rel="stylesheet" href="../static/styles/forms.css">
-<script src="../static/script/redirect.js"></script>
 <h2>Users</h2>
 <div class="table-wrapper">
     <table class="table table-striped table-dark">
@@ -29,7 +28,7 @@
         <tbody>
     </table>
 </div>
-<button type="button" class="btn btn-primary" onclick="aduser()">Add User</button>
-<button type="button" class="btn btn-primary" onclick="deluser()">Delete User</button>
-<button type="button" class="btn btn-primary" onclick="admnuser()">Make admin</button>
+<a class="btn btn-secondary" href="{{ url_for('views.aduser') }}">Add User</a>
+<a class="btn btn-secondary" href="{{ url_for('views.deluser') }}">Delete User</a>
+<a class="btn btn-secondary" href="{{ url_for('views.adnuser') }}">Make admin</a>
 {% endblock %}
