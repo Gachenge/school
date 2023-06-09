@@ -436,7 +436,7 @@ def adblog():
         storage.new(post)
         storage.save()
         flash("Your post has been created", 'success')
-        return redirect(url_for('views.home'))
+        return redirect(url_for('views.blog'))
     return render_template('create_post.html', user=current_user, form=form, legend='New post')
 
 
@@ -470,10 +470,10 @@ def updatepost(post_id):
         new.content = form.content.data
         storage.save()
         flash("Your post has been updated", 'success')
-        return redirect(url_for('views.post', post_id=new.blog_id))
+        return redirect(url_for('views.blog', post_id=new.blog_id))
     elif request.method == 'GET':
         form.title.data = new.title
-        form.content.data = post.content
+        form.content.data = new.content
     return render_template('create_post.html', user=current_user, form=form, legend='Update post')
 
 
@@ -493,7 +493,7 @@ def delete_post(post_id):
         storage.delete(new)
         storage.save()
         flash("Your post has been deleted", 'success')
-        return redirect(url_for('views.home'))
+        return redirect(url_for('views.blog'))
 
 
 def send_reset_email(user):
@@ -555,7 +555,7 @@ def user_posts(username):
     per_page = 2
     posts, total_pages = storage.paginate(Blog, page, per_page)
     for post in posts:
-        if post.author.first_name == new.first_name:
+        if post.author == new.first_name:
             pos = post
     return render_template('user_posts.html', pos=posts, new=user, user=current_user, total_pages=total_pages)
 

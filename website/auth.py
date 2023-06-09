@@ -85,11 +85,15 @@ def account():
             picture_file = save_picture(form.picture.data)
             current_user.image_file = picture_file
         current_user.email = form.email.data
+        current_user.first_name = form.first_name.data
+        current_user.last_name = form.last_name.data
         storage.save()
         flash("Your account has been updated", 'success')
         return redirect(url_for('auth.account'))
     elif request.method == 'GET':
         form.email.data = current_user.email
+        form.first_name.data = current_user.first_name
+        form.last_name.data = current_user.last_name
     image_file = url_for('static', filename='images/' + current_user.image_file)
     return render_template('account.html', user=current_user,
                            image_file=image_file, form=form)

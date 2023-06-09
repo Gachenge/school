@@ -9,8 +9,9 @@ from models.teacher import Teacher
 from models.student import Student
 
 class UpdateAccountForm(FlaskForm):
-    email = StringField('Email',
-                        validators=[DataRequired(), Email()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    first_name = StringField('First name')
+    last_name = StringField('Last name')
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Update')
 
