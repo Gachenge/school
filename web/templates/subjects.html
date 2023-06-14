@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="jumbotron p-1" style="width: 700px;">
+                <h2>Manage <b>Subjects</b> <button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal">Add new subjects</button></h2>
+                <table class="table table-hover table-dark table-striped">
+                    <tr>
+                        <th>Subject Id</th>
+                        <th>Subject name</th>
+                        <th>Teachers</th>
+                        <th>Students</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in subjects %}
+                    <tr>
+                        <td>{{ subject.id }}</td>
+                        <td>{{ subject.name }}</td>
+                        <td>
+                        {% for teacher in subject.teacher %}
+                        {{ teacher.name }}{% if not loop.last %}<br>{% endif %}
+                        {% endfor %}
+                        </td>
+                        <td>
+                            {% for student in subject.student %}
+                            {{ student.name }}{% if not loop.last %}<br>{% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <a class="btn btn-outline-info btn-sm" href="{{ url_for('admin.subject_details', subject_id=subject.id) }}">Details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div id="mymodal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Add Subject</h4>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">X</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="content-section">
+                                    <form method="POST" action="">
+                                        {{ form.hidden_tag() }}
+                                        <fieldset class="form-group">
+                                            <div class="form-group">
+                                                {{ form.name.label(class="form-control-label") }}
+                                                {% if form.name.errors %}
+                                                    {{ form.name(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.name.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {{ form.name(class="form-control form-control-lg") }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group">
+                                                {{ form.sfname.label(class="form-control-label") }}
+                                                {% if form.sfname.errors %}
+                                                    {{ form.sfname(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.sfname.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {{ form.sfname(class="form-control form-control-lg") }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group">
+                                                {{ form.slname.label(class="form-control-label") }}
+                                                {% if form.slname.errors %}
+                                                    {{ form.slname(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.slname.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {{ form.slname(class="form-control form-control-lg") }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group">
+                                                {{ form.tfname.label(class="form-control-label") }}
+                                                {% if form.tfname.errors %}
+                                                    {{ form.tfname(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.tfname.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {{ form.tfname(class="form-control form-control-lg") }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group">
+                                                {{ form.tlname.label(class="form-control-label") }}
+                                                {% if form.tlname.errors %}
+                                                    {{ form.tlname(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.tlname.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {{ form.tlname(class="form-control form-control-lg") }}
+                                                {% endif %}
+                                            </div>                                              
+                                        </fieldset>
+                                        <div class="form-group">
+                                            {{ form.submit(class="btn btn-outline-info") }}
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

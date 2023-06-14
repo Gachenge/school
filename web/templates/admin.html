@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<body class="full" style="background-image: url(../static/web_images/admin.jpeg); height: 100%;">
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <img src="{{ url_for('static', filename='/web_images/users.png') }}" class="img-fluid" alt="...">
+      <a class="btn btn-outline-warning btn-lg" href="{{ url_for('admin.users') }}">Users</a>
+      <p>
+      </p>
+    </div>
+    <div class="col">
+      <img src="{{ url_for('static', filename='/web_images/teachers.png') }}" class="img-fluid" alt="...">
+      <a class="btn btn-outline-warning btn-lg" href="{{ url_for('admin.teachers') }}">Teachers</a>
+    </div>
+    <div class="col">
+      <img src="{{ url_for('static', filename='/web_images/students.png') }}" class="img-fluid" alt="...">
+      <a class="btn btn-outline-warning btn-lg" href="{{ url_for('admin.students') }}">Students</a>
+    </div>
+    <div class="col">
+      <img src="{{ url_for('static', filename='/web_images/subjects.jpeg') }}" class="img-fluid" alt="...">
+      <a class="btn btn-outline-warning btn-lg" href="{{ url_for('admin.subjects') }}">Subjects</a>
+    </div>
+  </div>
+</div>
+</body>
+{% endblock content %}
