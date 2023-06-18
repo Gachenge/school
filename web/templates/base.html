@@ -67,10 +67,12 @@
             <h3>Quick Links</h3>
               <ul class="list-group">
                 <a class="nav-item nav-link" href="{{ url_for('posts.new_post')}}">New Post</a>
-                {% if current_user.role == 'student' %}
-                  <a class="nav-item nav-link" href="{{ url_for('student.student_account') }}">Student portal</a>
-                {% elif current_user.role == 'teacher' %}
-                  <a class="nav-item nav-link" href="{{ url_for('teacher.teacher_account') }}">Staff portal</a>
+                {% if current_user.is_authenticated %}
+                  {% if current_user.role == 'student' %}
+                    <a class="nav-item nav-link" href="{{ url_for('student.student_account') }}">Student portal</a>
+                  {% elif current_user.role == 'teacher' %}
+                    <a class="nav-item nav-link" href="{{ url_for('teacher.teacher_account') }}">Staff portal</a>
+                  {% endif %}
                 {% endif %}
                 <a class="nav-item nav-link" href="#">Calendar</a>
               </ul>
