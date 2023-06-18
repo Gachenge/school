@@ -1,10 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="content-section">
+    <div class="media">
+        <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + current_user.image_file) }}">
+        <div class="media-body">
+            <h2 class="account-heading">{{ current_user.username }}</h2>
+            <p class="text-secondary">{{ current_user.email }}</p>
+        </div>
+    </div>
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Join Today</legend>
+            <legend class="border-bottom mb-4">Account info</legend>
             <div class="form-group">
                 {{ form.fname.label(class="form-control-label") }}
 
@@ -60,41 +67,42 @@
                     {{ form.email(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
-            <div class="form-group">
-                {{ form.password.label(class="form-control-label") }}
-                {% if form.password.errors %}
-                    {{ form.password(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.password.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.password(class="form-control form-control-lg") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
-                {{ form.confirm_password.label(class="form-control-label") }}
-                {% if form.confirm_password.errors %}
-                    {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.confirm_password.errors %}
-                            <span>{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    {{ form.confirm_password(class="form-control form-control-lg") }}
-                {% endif %}
-            </div>
         </fieldset>
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
         </div>
     </form>
+<div class="jumbotron p-1" style="width: 700px;">
+    <table class="table table-hover table-dark table-striped">
+        <tr>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Subjects</th>
+                <th>Grades</th>
+                <th>Average Grade</th>
+            </tr>
+            <tr>
+                <td>{{ student.id }}</td>
+                <td>{{ student.name }}</td>
+                <td>
+                    {% for subject in student.subjects %}
+                        {{ subject.name }}{% if not loop.last %}<br>{% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% set student_grades = [] %}
+                    {% for grade in grades %}
+                    {% if grade.student_id == student.id %}
+                    {% set _ = student_grades.append(grade.grade|float) %}
+                    {{ grade.grade }}{% if not loop.last %}<br>{% endif %}
+                    {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ student.average_grade }}</td>
+        </tr>
+    </table>
 </div>
-<div class="border-top pt-3">
-    <small class="text-muted">
-        Already Have An Account? <a class="ml-2" href="{{ url_for('users.login') }}">Sign In</a>
-    </small>
 </div>
+
 {% endblock content %}

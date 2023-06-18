@@ -11,11 +11,13 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
+    name = db.Column(db.String(120), default=None)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    phone = db.Column(db.String(10), nullable=False, default='3456789234')
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(60), nullable=False)
     role = db.Column(db.String(10), default='user')
-    posts = db.relationship('Post', backref='author', lazy=True)
+    posts = db.relationship('Post', backref='author', cascade='all, delete')
 
     def get_reset_token(self, expires_sec=1800):
         s =Serializer(current_app.config['SECRET_KEY'], expires_sec)
@@ -47,13 +49,16 @@ class Post(db.Model):
 class Teacher(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
+    username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(100), nullable =False)
-    phone = db.Column(db.String(10), nullable=False)
+    phone = db.Column(db.String(10), nullable=False, default='3456789234')
     subjects = db.relationship("Subject", secondary='subject_teacher_association', back_populates="teacher")
 
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, default='None')
     subjects = db.relationship("Subject", secondary='subject_student_association', back_populates="student")
     grades = db.relationship("SubjectGrade", back_populates="student")
 
@@ -87,11 +92,13 @@ class SubjectGrade(db.Model):
     subject = db.relationship('Subject', back_populates='grades')
     student = db.relationship('Student', back_populates='grades')
 
-    subject_teacher_association = db.Table(
+
+subject_teacher_association = db.Table(
     'subject_teacher_association',
     db.Column('subject_id', db.Integer, db.ForeignKey('subject.id', ondelete='SET NULL')),
     db.Column('teacher_id', db.Integer, db.ForeignKey('teacher.id', ondelete='SET NULL'))
 )
+
 
 subject_student_association = db.Table(
     'subject_student_association',

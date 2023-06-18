@@ -20,7 +20,7 @@
             <td>
                 {% set student_grades = [] %}
                 {% for grade in grades %}
-                {% if grade.student_id == student.student_id %}
+                {% if grade.student_id == student.id %}
                 {% set _ = student_grades.append(grade.grade|float) %}
                 {{ grade.grade }}{% if not loop.last %}<br>{% endif %}
                 {% endif %}
@@ -45,7 +45,6 @@
                         <form method="POST" action="">
                             {{ form.hidden_tag() }}
                             <fieldset class="form-group">
-                                <legend class="border-bottom mb-4">Update teacher</legend>
                                 <div class="form-group">
                                     {{ form.fname.label(class="form-control-label") }}
                                     {% if form.fname.errors %}
@@ -70,6 +69,32 @@
                                         </div>
                                     {% else %}
                                         {{ form.lname(class="form-control form-control-lg") }}
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.email.label(class="form-control-label") }}
+                                    {% if form.email.errors %}
+                                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.email.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.email(class="form-control form-control-lg") }}
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.username.label(class="form-control-label") }}
+                                    {% if form.username.errors %}
+                                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.username.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.username(class="form-control form-control-lg") }}
                                     {% endif %}
                                 </div>
                                 <div class="form-group">

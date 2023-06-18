@@ -15,7 +15,7 @@ def register():
     form = RegistratrationForm()
     if form.validate_on_submit():
         hashed = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed)
+        user = User(name=form.fname.data+' '+form.lname.data, username=form.username.data, email=form.email.data, password=hashed)
         db.session.add(user)
         db.session.commit()
         flash(f"Account created for {form.username.data}!", 'success')
@@ -50,12 +50,14 @@ def account():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
             current_user.image_file = picture_file
+        current_user.name = form.fname.data+' '+form.lname.data
         current_user.username = form.username.data
         current_user.email = form.email.data
         db.session.commit()
         flash("Your account has been updated", 'success')
         return redirect(url_for('users.account'))
     elif request.method == 'GET':
+        form.fname.data, form.lname.data = current_user.name.split(' ')
         form.username.data = current_user.username
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)

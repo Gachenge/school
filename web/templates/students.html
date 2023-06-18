@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="jumbotron p-1" style="width: 700px;">
-                <h2>Manage <b>Teachers</b> <button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal">Add new students</button></h2>
+                <h2>Manage <b>Students</b> <button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal">Add new students</button></h2>
                 <table class="table table-hover table-dark table-striped">
                     <tr>
                         <th>ID</th>
@@ -74,6 +74,19 @@
                                                     </div>
                                                 {% else %}
                                                     {{ form.lname(class="form-control form-control-lg") }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group">
+                                                {{ form.username.label(class="form-control-label") }}
+                                                {% if form.username.errors %}
+                                                    {{ form.username(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.username.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {{ form.username(class="form-control form-control-lg") }}
                                                 {% endif %}
                                             </div>
                                             <div class="form-group">

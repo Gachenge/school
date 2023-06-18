@@ -26,14 +26,19 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     mail.init_app(app)
     
-    from web.users.views import users
-    from web.posts.views import posts
-    from web.main.views import main
     from web.admin.views import admin
+    from web.main.views import main
+    from web.posts.views import posts
+    from web.student.views import student
+    from web.teacher.views import teacher
+    from web.users.views import users
     
-    app.register_blueprint(users)
-    app.register_blueprint(posts)
-    app.register_blueprint(main)
     app.register_blueprint(admin)
+    app.register_blueprint(main)
+    app.register_blueprint(posts)
+    app.register_blueprint(student)
+    app.register_blueprint(teacher)
+    app.register_blueprint(users)
+
 
     return app

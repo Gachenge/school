@@ -37,6 +37,32 @@
                                         {{ form.hidden_tag() }}
                                         <fieldset class="form-group">
                                             <div class="form-group">
+                                                {{ form.fname.label(class="form-control-label") }}
+                                                {% if form.fname.errors %}
+                                                    {{ form.fname(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.fname.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {{ form.fname(class="form-control form-control-lg") }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group">
+                                                {{ form.lname.label(class="form-control-label") }}
+                                                {% if form.lname.errors %}
+                                                    {{ form.lname(class="form-control form-control-lg is-invalid") }}
+                                                    <div class="invalid-feedback">
+                                                        {% for error in form.lname.errors %}
+                                                            <span>{{ error }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    {{ form.lname(class="form-control form-control-lg") }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="form-group">
                                                 {{ form.username.label(class="form-control-label") }}
                                                 {% if form.username.errors %}
                                                     {{ form.username(class="form-control form-control-lg is-invalid") }}

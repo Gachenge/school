@@ -21,9 +21,16 @@ def users():
         form = RegistrationForm()
         if form.validate_on_submit():
             hashed = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-            user = User(username=form.username.data, email=form.email.data, password=hashed, role=form.role.data)
+            user = User(name=form.fname.data+' '+form.lname.data, username=form.username.data, email=form.email.data, password=hashed, role=form.role.data)
             db.session.add(user)
             db.session.commit()
+            if form.role.data == 'student':
+                student = Student(name=user.name, username=user.username, email=user.email)
+                db.session.add(student)
+            elif form.role.data == 'teacher':
+                teacher = Teacher(name=user.name, username=user.username, email=user.email)
+                db.session.add(teacher)
+            db.session.commit()                
             flash("New user created", 'success')
             return redirect(url_for('admin.users'))
         return render_template("users.html", title='Users', users=users, form=form)
@@ -38,13 +45,22 @@ def user_details(user_id):
         user = User.query.get_or_404(user_id)
         form = UserUpdateForm()
         if form.validate_on_submit():
+            user.name = form.fname.data+' '+form.lname.data
             user.username = form.username.data
             user.email = form.email.data
             user.role = form.role.data
+            if form.role.data == 'student':
+                student = Student(name=form.fname.data+' '+form.lname.data, username=form.username.data, email=form.email.data)
+                db.session.add(student)
+            elif form.role.data == 'teacher':
+                teacher = Teacher(name=form.fname.data+' '+form.lname.data, username=form.username.data, email=form.email.data)
+                db.session.add(teacher)
             db.session.commit()
             flash('User updated', 'success')
             return redirect(url_for('admin.users'))
         elif request.method == 'GET':
+            if user.name:
+                form.fname.data, form.lname.data = user.name.split(' ')
             form.username.data = user.username
             form.email.data = user.email
             form.role.data = user.role
@@ -102,6 +118,7 @@ def teacher_details(teacher_id):
         form = TeacherUpdateForm()
         if form.validate_on_submit():
             teacher.name = form.fname.data + ' ' + form.lname.data
+            teacher.username = form.username.data
             teacher.email = form.email.data
             teacher.phone = form.phone.data
             subject_name = form.subject.data
@@ -117,6 +134,7 @@ def teacher_details(teacher_id):
             return redirect(url_for('admin.teachers'))
         elif request.method == 'GET':
             form.fname.data, form.lname.data = teacher.name.split(" ")
+            form.username.data = teacher.username
             form.email.data = teacher.email
             form.phone.data = teacher.phone
         return render_template("teacher_details.html", form=form, teacher=teacher)
@@ -176,9 +194,11 @@ def student_details(student_id):
     if current_user.role == 'admin':
         student_id = request.view_args['student_id']
         student = Student.query.get_or_404(student_id)
+        grades = SubjectGrade.query.all()
         form = StudentUpdateForm()
         if form.validate_on_submit():
             student.name = form.fname.data + ' ' + form.lname.data
+            student.username = form.username.data
             student.subject = form.subject.data
             student.grade = form.grade.data
             subject_name = form.subject.data
@@ -197,7 +217,9 @@ def student_details(student_id):
             return redirect(url_for('admin.students'))
         elif request.method == 'GET':
             form.fname.data, form.lname.data = student.name.split(" ")
-        return render_template("student_details.html", form=form, student=student)
+            form.username.data = student.username
+            form.email.data = student.email
+        return render_template("student_details.html", form=form, grades=grades, student=student)
     else:
         flash("You do not have enough permissions to view this page", 'danger')
         return redirect(url_for('main.home'))

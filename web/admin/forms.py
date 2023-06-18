@@ -6,10 +6,12 @@ from wtforms.validators import DataRequired, Length, Email, ValidationError
 from wtforms import StringField, PasswordField, SubmitField, RadioField
 
 class RegistrationForm(FlaskForm):
+    fname = StringField("First name", validators=[DataRequired(), Length(min=3, max=20)])
+    lname = StringField("Last name", validators=[DataRequired(), Length(min=3, max=20)])
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired(), Length(min=7)])
-    role = RadioField('Role: ', choices=[('student', 'Student'), ('user', 'User'), ('admin', 'Admin')], validators=[DataRequired()])
+    role = RadioField('Role: ', choices=[('student', 'Student'), ('teacher', 'Teacher'), ('user', 'User'), ('admin', 'Admin')], validators=[DataRequired()])
     submit = SubmitField("Add")
 
     def validate_username(self, username):
@@ -23,9 +25,11 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('That email is registered.')
         
 class UserUpdateForm(FlaskForm):
+    fname = StringField("First name", validators=[DataRequired(), Length(min=3, max=20)])
+    lname = StringField("Last name", validators=[DataRequired(), Length(min=3, max=20)])
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField("Email", validators=[DataRequired(), Email()])
-    role = RadioField('Role: ', choices=[('student', 'Student'), ('user', 'User'), ('admin', 'Admin')], validators=[DataRequired()])
+    role = RadioField('Role: ', choices=[('student', 'Student'), ('teacher', 'Teacher'), ('user', 'User'), ('admin', 'Admin')], validators=[DataRequired()])
     submit = SubmitField("Update")
 
     def validate_username(self, username):
@@ -41,10 +45,16 @@ class UserUpdateForm(FlaskForm):
 class TeacherRegistrationForm(FlaskForm):
     fname = StringField('First name', validators=[DataRequired(), Length(min=3, max=20)])
     lname = StringField("Last name", validators=[DataRequired(), Length(min=3, max=20)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     phone = StringField("Phone", validators=[DataRequired(), Length(min=10, max=11)])
     subject = StringField("Subject", validators=[DataRequired()])
     submit = SubmitField("Add teacher")
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user and user.username != username.data:
+            raise ValidationError('That username is taken. Please choose a different one')
         
     def validate_email(self, email):
         user = Teacher.query.filter_by(email=email.data).first()
@@ -55,10 +65,16 @@ class TeacherRegistrationForm(FlaskForm):
 class TeacherUpdateForm(FlaskForm):
     fname = StringField('First name', validators=[DataRequired(), Length(min=3, max=20)])
     lname = StringField("Last name", validators=[DataRequired(), Length(min=3, max=20)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     phone = StringField("Phone", validators=[DataRequired(), Length(min=10, max=11)])
     subject = StringField("Subject")
     submit = SubmitField("Update teacher")
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user and user.username != username.data:
+            raise ValidationError('That username is taken. Please choose a different one')
         
     def validate_email(self, email):
         teacher = Teacher.query.filter_by(email=email.data).first()
@@ -68,16 +84,40 @@ class TeacherUpdateForm(FlaskForm):
 class StudentRegistrationForm(FlaskForm):
     fname = StringField('First name', validators=[DataRequired(), Length(min=3, max=20)])
     lname = StringField("Last name", validators=[DataRequired(), Length(min=3, max=20)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
     grade = StringField('Grade', validators=[DataRequired()])
     subject = StringField("Subject", validators=[DataRequired()])
     submit = SubmitField("Add student")
 
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user and user.username != username.data:
+            raise ValidationError('That username is taken. Please choose a different one')
+        
+    def validate_email(self, email):
+        teacher = Teacher.query.filter_by(email=email.data).first()
+        if teacher and teacher.email != email.data:
+            raise ValidationError('That email is registered.')
+
 class StudentUpdateForm(FlaskForm):
     fname = StringField('First name', validators=[DataRequired(), Length(min=3, max=20)])
     lname = StringField("Last name", validators=[DataRequired(), Length(min=3, max=20)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
     grade = StringField('Grade')
     subject = StringField("Subject")
     submit = SubmitField("Update student")
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user and user.username != username.data:
+            raise ValidationError('That username is taken. Please choose a different one')
+        
+    def validate_email(self, email):
+        teacher = Teacher.query.filter_by(email=email.data).first()
+        if teacher and teacher.email != email.data:
+            raise ValidationError('That email is registered.')
 
 class SubjectRegistrationForm(FlaskForm):
     name = StringField("Subject name", validators=[DataRequired()])
