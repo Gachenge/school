@@ -1,2 +1,6 @@
-a small school administration system.
-An administrator can login, add a student or access student records
+This is a school website. It incorporates a school announcements board. At the moment, the announcements board serves as a blog. The website supports a login and registration page. On the login page, if a user has forgotten their password, an email is sent to their registered email address with a password reset token.
+New users can signup for an account and are then able to login. These users have limited access and can only go as far as creating a post, and editing it. They are also able to view other users' posts but cannot update them or delete them. Any new user is also able to update their account,  adding a profile picture, which will then be saved to their accounts and will be loaded to their profiles, where it is also displayed with their blog post.
+A website administrator has the option to upgrade a users permissions to either a student, a teacher or an administrator. 
+Student accounts are able to access a student portal, where their subjects and corresponding grades are posted. The are also able to pick which subjects to take from a list of subjects offered.
+A teacher also has access to the subjects they teach and the students in each of their classes. Teachers are able to update a students grade per subject. The backend algorithm then automatically calculates the average grade of every student, taking into consideration every subject they take.
+An administrator has the authority to add or remove new users, students, teachers, subjects or even fellow administrators.
