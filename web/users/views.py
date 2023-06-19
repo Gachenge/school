@@ -57,7 +57,8 @@ def account():
         flash("Your account has been updated", 'success')
         return redirect(url_for('users.account'))
     elif request.method == 'GET':
-        form.fname.data, form.lname.data = current_user.name.split(' ')
+        if current_user.name:
+            form.fname.data, form.lname.data = current_user.name.split(' ')
         form.username.data = current_user.username
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
