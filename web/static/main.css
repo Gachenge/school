@@ -80,15 +80,32 @@ body {
   }
 
   .carousel {
-    height: 50vh;
-  }
-  
-  .carousel .carousel-item {
-    height: 100%;
-  }
-  
-  .carousel .carousel-item img {
-    object-fit: cover;
-    height: 100%;
     width: 100%;
+    margin: 0 auto;
+  }  
+
+  footer {
+    width: 100%;
+    position: relative;
+    bottom: 0;
+    height: 20%;
+    background-color: #ffffff;
   }
+
+footer .footer-header {
+  background-color: #5f788a;
+  text-align: center;
+}
+
+footer .footer-content{
+  background-color: #444444;
+}
+
+.carousel {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.index {
+  background-image: url('../static/web_images/admin.jpeg');
+}
