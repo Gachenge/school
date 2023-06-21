@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="form-check">
+            <legend class="border-bottom mb-4">Account info</legend>
+            {% for choice, label in form.name.choices %}
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="name" value="{{ choice }}">
+                <label class="form-check-label">{{ label }}</label>
+            </div>
+            {% endfor %}
+            {% if form.name.errors %}
+            <div class="invalid-feedback">
+                {% for error in form.name.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <br>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+</div>
+{% endblock content %}

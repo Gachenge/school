@@ -102,6 +102,8 @@
                 <td>{{ student.average_grade }}</td>
         </tr>
     </table>
+        <a class="btn btn-outline-info btn-sm float-right"
+            href="{{ url_for('student.choose_subjects', student_id=student.id) }}">Subjects</a>
 </div>
 </div>
 

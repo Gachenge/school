@@ -1,7 +1,7 @@
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from web.models import User
-from wtforms import StringField, SubmitField
+from web.models import User, Subject
+from wtforms import StringField, SubmitField, SelectMultipleField
 from wtforms.validators import ValidationError, DataRequired, Length, Email
 
 class StudentAccountForm(FlaskForm):
@@ -22,3 +22,7 @@ class StudentAccountForm(FlaskForm):
             user = User.query.filter_by(email=email.data).first()
             if user:
                 raise ValidationError('That email is registered.')
+
+class StudentSubjectForm(FlaskForm):
+    name = SelectMultipleField("Subjects", coerce=int, validators=[DataRequired()])
+    submit = SubmitField("Add") 
