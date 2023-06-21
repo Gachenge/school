@@ -52,6 +52,12 @@
                 {% if current_user.role == 'admin' %}
                 <a class="nav-item nav-link" href="{{ url_for('admin.administrator') }}">Admin</a>
                 <a class="nav-item nav-link" href="{{ url_for('users.logout')}}">Logout</a>
+                {% elif current_user.role == 'student' %}
+                <a class="nav-item nav-link" href="{{ url_for('student.student_account') }}">Student portal</a>
+                <a class="nav-item nav-link" href="{{ url_for('users.logout')}}">Logout</a>
+                {% elif current_user.role == 'teacher' %}
+                <a class="nav-item nav-link" href="{{ url_for('teacher.teacher_account') }}">Staff portal</a>
+                <a class="nav-item nav-link" href="{{ url_for('users.logout')}}">Logout</a>
                 {% endif %}
               <a class="nav-item nav-link" href="{{ url_for('users.account')}}">{{ current_user.username }}</a>
               <a class="nav-item nav-link" href="{{ url_for('users.logout')}}">Logout</a>
