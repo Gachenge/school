@@ -1,3 +1,5 @@
+"""keep some parts of the app secret. use environment variables"""
+
 import os
 
 class Config:

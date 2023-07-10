@@ -1,3 +1,4 @@
+"""contains all the routes for the admin page"""
 from web.admin.forms import (RegistrationForm, UserUpdateForm, TeacherRegistrationForm, StudentUpdateForm,
                               TeacherUpdateForm, StudentRegistrationForm, SubjectRegistrationForm)
 from flask import Blueprint, render_template, flash, redirect, url_for, request
@@ -10,12 +11,14 @@ admin = Blueprint('admin', __name__)
 @admin.route("/administrator")
 @login_required
 def administrator():
+    """admin homepage"""
     return render_template("admin.html", title="Admin page")
 
 
 @admin.route("/users", methods=['GET', 'POST'])
 @login_required
 def users():
+    """lists all users also allows for addition of new users"""
     if current_user.role == 'admin':
         users = User.query.all()
         form = RegistrationForm()
@@ -40,6 +43,7 @@ def users():
 
 @admin.route("/user/<int:user_id>", methods=['GET', 'POST'])
 def user_details(user_id):
+    """access more options for students. either edit or delete"""
     if current_user.role == 'admin':
         user_id = request.view_args['user_id']
         user = User.query.get_or_404(user_id)
@@ -71,6 +75,7 @@ def user_details(user_id):
 
 @admin.route("/user/<int:user_id>/delete")
 def user_delete(user_id):
+    """allows for the option to delete"""
     if current_user.role == 'admin':
         user_id = request.view_args['user_id']
         user = User.query.get_or_404(user_id)
@@ -85,6 +90,7 @@ def user_delete(user_id):
 @admin.route("/teachers", methods=['GET', 'POST'])
 @login_required
 def teachers():
+    """lists all teachers and also allow an option to add new teachers"""
     if current_user.role == 'admin':
         teachers = Teacher.query.all()
         subjects = Subject.query.all()
@@ -112,6 +118,7 @@ def teachers():
     
 @admin.route("/teacher/<int:teacher_id>", methods=['GET', 'POST'])
 def teacher_details(teacher_id):
+    """gives an option to see more details for a teacher"""
     if current_user.role == 'admin':
         teacher_id = request.view_args['teacher_id']
         teacher = Teacher.query.get_or_404(teacher_id)
@@ -145,6 +152,7 @@ def teacher_details(teacher_id):
     
 @admin.route("/teacher/<int:teacher_id>/delete")
 def teacher_delete(teacher_id):
+    """option to delete a teacher"""
     if current_user.role == 'admin':
         teacher_id = request.view_args['teacher_id']
         teacher = Teacher.query.get_or_404(teacher_id)
@@ -159,6 +167,7 @@ def teacher_delete(teacher_id):
 @admin.route("/students", methods=['GET', 'POST'])
 @login_required
 def students():
+    """shows all students also allows for the addition of more"""
     if current_user.role == 'admin':
         grades = SubjectGrade.query.all()
         students = Student.query.all()
@@ -191,6 +200,7 @@ def students():
     
 @admin.route("/student/<int:student_id>", methods=['GET', 'POST'])
 def student_details(student_id):
+    """more options for each student allow updates"""
     if current_user.role == 'admin':
         student_id = request.view_args['student_id']
         student = Student.query.get_or_404(student_id)
@@ -226,6 +236,7 @@ def student_details(student_id):
     
 @admin.route("/student/<int:student_id>/delete")
 def student_delete(student_id):
+    """gives the option to delete a student"""
     if current_user.role == 'admin':
         student_id = request.view_args['student_id']
         student = Student.query.get_or_404(student_id)
@@ -240,6 +251,7 @@ def student_delete(student_id):
 @admin.route("/subjects", methods=['GET', 'POST'])
 @login_required
 def subjects():
+    """lists all subjects and allows the addition of new ones"""
     if current_user.role == 'admin':
         subjects = Subject.query.all()
         teachers = Teacher.query.all()
@@ -271,6 +283,7 @@ def subjects():
 
 @admin.route("/subject/<int:subject_id>", methods=['GET', 'POST'])
 def subject_details(subject_id):
+    """shows the details of a subject, giing option to edit"""
     if current_user.role == 'admin':
         subject_id = request.view_args['subject_id']
         subject = Subject.query.get_or_404(subject_id)
@@ -319,6 +332,7 @@ def subject_details(subject_id):
     
 @admin.route("/subject/<int:subject_id>/delete")
 def subject_delete(subject_id):
+    """delete a subject"""
     if current_user.role == 'admin':
         subject_id = request.view_args['subject_id']
         subject = Subject.query.get_or_404(subject_id)

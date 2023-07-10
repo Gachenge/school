@@ -1,3 +1,5 @@
+"""contains all routes connected to the user"""
+
 from flask import Blueprint, redirect, url_for, flash, render_template, request
 from flask_login import current_user, login_user, logout_user, login_required
 from flask_mail import Message
@@ -10,6 +12,7 @@ users = Blueprint('users', __name__)
 
 @users.route("/register", methods=['GET', 'POST'])
 def register():
+    """register/signupo as a new user"""
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = RegistratrationForm()
@@ -24,6 +27,7 @@ def register():
 
 @users.route("/login", methods=['GET', 'POST'])
 def login():
+    """registered users can login here"""
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = LoginForm()
@@ -39,12 +43,14 @@ def login():
 
 @users.route("/logout")
 def logout():
+    """allow for user logout"""
     logout_user()
     return redirect(url_for('main.home'))
 
 @users.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
+    """access your personal details and allow for updating"""
     form =UpdateAccountForm()
     if form.validate_on_submit():
         if form.picture.data:
@@ -67,6 +73,7 @@ def account():
 @users.route("/user/<string:username>")
 @login_required
 def user_posts(username):
+    """access all posts added by a particular user"""
     page = request.args.get('page', 1, type=int)
     user = User.query.filter_by(username=username).first_or_404()
     posts = Post.query.filter_by(author=user)\
@@ -75,6 +82,7 @@ def user_posts(username):
     return render_template('user_posts.html', posts=posts, user=user)
 
 def send_reset_email(user):
+    """if user forgets their password, send a reset token to the email address supplied"""
     token = user.get_reset_token()
     msg = Message("Password Reset Request", sender='noreply@demo.com', recipients=[user.email])
     msg.body = f"""To reset your password, visit the following link:
@@ -87,6 +95,7 @@ If you did not make this request, simply ignore this message.
 
 @users.route("/reset_password", methods=['GET', 'POST'])
 def reset_request():
+    """allow a user to request a password reset request"""
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = RequestResetForm()
@@ -100,6 +109,7 @@ def reset_request():
 
 @users.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):
+    """verify the reset token and allow for password reset if valid"""
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     user = User.verify_reset_token(token)

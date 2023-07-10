@@ -1,3 +1,5 @@
+"""handles all the routes concerning a teacher"""
+
 from flask import Blueprint, render_template, request, redirect, flash, url_for
 from flask_login import login_required, current_user
 from web.models import Teacher, Subject, Student, SubjectGrade, subject_teacher_association, subject_student_association
@@ -9,6 +11,7 @@ teacher = Blueprint('teacher', __name__)
 @teacher.route("/teacher_account", methods=['GET', 'POST'])
 @login_required
 def teacher_account():
+    """handles the teachers personal information and allows them to update their details"""
     if current_user.role == 'teacher':
         form = TeacherAccountForm()
         if form.validate_on_submit():
@@ -32,6 +35,7 @@ def teacher_account():
 @teacher.route("/teacher_account/students", methods=['GET', 'POST'])
 @login_required
 def studentScores():
+    """allows the teacher to add and edit student scores. Only display the students in subjects they teach"""
     if current_user.role == 'teacher':
         teacher = Teacher.query.filter_by(email=current_user.email).first()
         subjects = Subject.query.join(subject_teacher_association).filter_by(teacher_id=teacher.id).all()

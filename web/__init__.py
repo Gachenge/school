@@ -1,3 +1,5 @@
+"""initialise the app, register all blueprints"""
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy 
 from flask_bcrypt import Bcrypt
@@ -18,6 +20,7 @@ mail = Mail()
 
 
 def create_app(config_class=Config):
+    """create the flask app with the supplied details"""
     app = Flask(__name__)
     app.config.from_object(Config)
 

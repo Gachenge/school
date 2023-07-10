@@ -1,3 +1,5 @@
+"""defines the database tables"""
+
 from datetime import datetime
 from flask import current_app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -9,6 +11,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 class User(db.Model, UserMixin):
+    """user table that inherits from usermixin. define all columns for the user"""
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     name = db.Column(db.String(120), default=None)
@@ -20,11 +23,13 @@ class User(db.Model, UserMixin):
     posts = db.relationship('Post', backref='author', cascade='all, delete')
 
     def get_reset_token(self, expires_sec=1800):
+        """generate a password reset token"""
         s =Serializer(current_app.config['SECRET_KEY'], expires_sec)
         return s.dumps({'user_id':self.id}).decode('utf-8')
     
     @staticmethod
     def verify_reset_token(token):
+        """verify the token is valid and not expired"""
         s =Serializer(current_app.config['SECRET_KEY'])
         try:
             user_id = s.loads(token)['user_id']
@@ -37,6 +42,7 @@ class User(db.Model, UserMixin):
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
     
 class Post(db.Model):
+    """define the post table and all its columns"""
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -47,6 +53,7 @@ class Post(db.Model):
         return f"User('{self.title}', '{self.date_posted}')"
     
 class Teacher(db.Model):
+    """table teacher, comnected to the subjects they teach"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     username = db.Column(db.String(20), unique=True, nullable=False)
@@ -55,6 +62,7 @@ class Teacher(db.Model):
     subjects = db.relationship("Subject", secondary='subject_teacher_association', back_populates="teacher")
 
 class Student(db.Model):
+    """student table. connected to the subject and subjectgrade"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     username = db.Column(db.String(20), unique=True, nullable=False)
@@ -64,6 +72,7 @@ class Student(db.Model):
 
     @property
     def average_grade(self):
+        """automatically calculate the average grade for each student. populate the grade column in student"""
         total_grade = sum(int(grade.grade.rstrip('%')) for grade in self.grades)
         grade_count = len(self.grades)
         if grade_count > 0:
@@ -74,6 +83,7 @@ class Student(db.Model):
 
 
 class Subject(db.Model):
+    """define the subject table and its connection to teacher and student"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id', ondelete="SET NULL"))
@@ -84,6 +94,7 @@ class Subject(db.Model):
 
 
 class SubjectGrade(db.Model):
+    """defines every students grade per subject"""
     id = db.Column(db.Integer, primary_key=True)
     subject_id = db.Column(db.Integer, db.ForeignKey('subject.id', ondelete="SET NULL"))
     student_id = db.Column(db.Integer, db.ForeignKey('student.id', ondelete="SET NULL"))

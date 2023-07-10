@@ -1,3 +1,5 @@
+"""contains all the routes for the student"""
+
 from flask import Blueprint, render_template, request, redirect, flash, url_for, jsonify
 from flask_login import login_required, current_user
 from web.models import SubjectGrade, Subject, Student
@@ -9,6 +11,7 @@ student = Blueprint('student', __name__)
 @student.route("/student_account", methods=['GET', 'POST'])
 @login_required
 def student_account():
+    """give access to the student's account"""
     if current_user.role == 'student':
         grades = SubjectGrade.query.all()
         subjects = Subject.query.all()
@@ -33,6 +36,7 @@ def student_account():
 @student.route("/student_account/<int:student_id>/subjects", methods=['GET', 'POST'])
 @login_required
 def choose_subjects(student_id):
+    """lets the student pick the subjects they are to take"""
     if current_user.role == 'student':
         student = Student.query.get(student_id)
         if not student:
