@@ -5,3 +5,5 @@ Student accounts are able to access a student portal, where their subjects and c
 A teacher also has access to the subjects they teach and the students in each of their classes. Teachers are able to update a students grade per subject. The backend algorithm then automatically calculates the average grade of every student, taking into consideration every subject they take.
 An administrator has the authority to add or remove new users, students, teachers, subjects or even fellow administrators.
 This project has been developed with Python in particular, I applied Flask for the API, and flask sqlalchemy orm to develop and query the database. All the forms are developed and validated using wtforms.
+For the database, I chose to use a mysql database. As it is open source and easily scales when needed. It also provides for data security.
+Passwords are first encrypted using bcrypt before being stored. Bcrypt makes it harder for passwords to be compromised using brute force attacks.
