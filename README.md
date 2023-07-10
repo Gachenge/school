@@ -4,3 +4,4 @@ A website administrator has the option to upgrade a users permissions to either 
 Student accounts are able to access a student portal, where their subjects and corresponding grades are posted. The are also able to pick which subjects to take from a list of subjects offered.
 A teacher also has access to the subjects they teach and the students in each of their classes. Teachers are able to update a students grade per subject. The backend algorithm then automatically calculates the average grade of every student, taking into consideration every subject they take.
 An administrator has the authority to add or remove new users, students, teachers, subjects or even fellow administrators.
+This project has been developed with Python in particular, I applied Flask for the API, and flask sqlalchemy orm to develop and query the database. All the forms are developed and validated using wtforms.
