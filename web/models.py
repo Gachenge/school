@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from flask import current_app
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
 from flask_login import UserMixin
 from web import db, login_manager
 
@@ -22,7 +22,7 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String(10), default='user')
     posts = db.relationship('Post', backref='author', cascade='all, delete')
 
-    def get_reset_token(self, expires_sec=1800):
+    def get_reset_token(self):
         """generate a password reset token"""
         s =Serializer(current_app.config['SECRET_KEY'], expires_sec)
         return s.dumps({'user_id':self.id}).decode('utf-8')
